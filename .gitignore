@@ -1,0 +1,62 @@
+# Modified .gitignore file. See Git's official file here https://github.com/github/gitignore/blob/master/VisualStudio.gitignore#L62
+
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+nlog.config
+
+# OS Generated Files
+*.DS_Store
+[Tt]humbs.db
+*.dll
+
+# AppSettings I don't want publically visible
+**/appsettings.json
+**/appsettings.development.json
+**/appsettings.production.json
+
+#Visual Studio Build Files
+[Oo]bj
+[Bb]in
+[Dd]ebug
+[Bb]uild/
+[Ll]og/
+x64/
+x86/
+bld/
+*.log
+.vs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
