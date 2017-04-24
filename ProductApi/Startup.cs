@@ -40,8 +40,8 @@ namespace ProductApi
             //Add the DB context so we can inject it into our classes
             services.AddDbContext<ProductApiContext>(o => o.UseSqlServer(connectionString));
 
-            //Scoped creates the ProductApiRepository once per request.
-            services.AddScoped<IProductApiRepository, ProductApiRepository>();
+            //Scoped creates the ProductRepository once per request.
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             //If you want to return UpperCase property names instead of camelCase. For new applications,
             //you'll probably want camelCase (the .Net Core default), but if you're working with Old MVC apps, then you may want uppercase.
@@ -90,21 +90,21 @@ namespace ProductApi
             AutoMapper.Mapper.Initialize(cfg =>
             {
                 //Syntax is CreateMap(SourceType, DestinationType). In other words: From an Entity to a DTO object
-                cfg.CreateMap<Entities.City, Models.CityWithoutPointsOfInterestDto>();
+                //cfg.CreateMap<Entities.ProductEntity, Models.CityWithoutPointsOfInterestDto>();
 
-                //You can create multiple mappings. In this case, getting a city back should match to both the CityDto and the CityWithoutPointsOfInterestDto
-                cfg.CreateMap<Entities.City, Models.CityDto>();
+                //You can create multiple mappings. In this case, getting a city back should match to both the Product and the CityWithoutPointsOfInterestDto
+                cfg.CreateMap<Entities.ProductEntity, Models.Product>();
 
-                cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestDto>();
+                //cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestDto>();
 
-                //For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
-                cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();
+                ////For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
+                //cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();
 
-                //For updating with PUT
-                cfg.CreateMap<Models.PointOfInterestForUpdate, Entities.PointOfInterest>();
+                ////For updating with PUT
+                //cfg.CreateMap<Models.PointOfInterestForUpdate, Entities.PointOfInterest>();
 
-                //For updating with Patch. We need the other way around since we're mapping an entity to a POIForUpdate dto.
-                cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForUpdate>();
+                ////For updating with Patch. We need the other way around since we're mapping an entity to a POIForUpdate dto.
+                //cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForUpdate>();
             });
 
             //Enable CORS
