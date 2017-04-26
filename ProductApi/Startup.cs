@@ -92,10 +92,12 @@ namespace ProductApi
                 //Syntax is CreateMap(SourceType, DestinationType). In other words: From an Entity to a DTO object
                 //cfg.CreateMap<Entities.ProductEntity, Models.CityWithoutPointsOfInterestDto>();
 
-                //You can create multiple mappings. In this case, getting a city back should match to both the Product and the CityWithoutPointsOfInterestDto
                 cfg.CreateMap<Entities.ProductEntity, Models.Product>();
+                cfg.CreateMap<Entities.ShoppingCartEntity, Models.ShoppingCart>();
+                cfg.CreateMap<Entities.CartItemEntity, Models.CartItem>();
 
-                //cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestDto>();
+                //Map the other for Post (i.e. when creating a Shopping Cart
+                cfg.CreateMap<Models.ShoppingCart, Entities.ShoppingCartEntity>();
 
                 ////For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
                 //cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();

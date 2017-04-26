@@ -8,9 +8,7 @@ namespace ProductApi.Entities
 {
     public class ShoppingCartEntity
     {
-        //Uniquely identify this cart
-        [Key]
-        public int CartId { get; set; }
+        public int Id { get; set; }
 
         //ID of the customer that created this cart
         //public int customerId { get; set; }

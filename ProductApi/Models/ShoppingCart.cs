@@ -9,9 +9,6 @@ namespace ProductApi.Models
     {
         public int Id { get; set; }
 
-        //Uniquely identify this cart
-        //public int cartId { get; set; }
-
         //ID of the customer that created this cart
         //public int customerId { get; set; }
 

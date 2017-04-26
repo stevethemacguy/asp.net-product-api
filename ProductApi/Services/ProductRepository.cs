@@ -56,7 +56,7 @@ namespace ProductApi.Services
 
         public bool ShoppingCartExists(int cartId)
         {
-            var cart = _context.ShoppingCarts.FirstOrDefault(c => c.CartId == cartId);
+            var cart = _context.ShoppingCarts.FirstOrDefault(c => c.Id == cartId);
             if (cart == null)
             {
                 return false;
@@ -69,14 +69,14 @@ namespace ProductApi.Services
         public int CreateShoppingCart(ShoppingCartEntity cartToAdd)
         {
             //check if the cart already exists in the DB.
-            var cartExists = ShoppingCartExists(cartToAdd.CartId);
+            var cartExists = ShoppingCartExists(cartToAdd.Id);
 
             //If it doesn't, then add a new Shopping Cart
             if (cartExists == false)
             {
                 //Use the mapper here
                 _context.ShoppingCarts.Add(cartToAdd);
-                return cartToAdd.CartId;
+                return cartToAdd.Id;
             }
             //The cart already exists
             else
@@ -88,7 +88,7 @@ namespace ProductApi.Services
         public ShoppingCartEntity GetShoppingCart(int cartId)
         {
             return _context.ShoppingCarts
-                .FirstOrDefault(c => c.CartId == cartId);
+                .FirstOrDefault(c => c.Id == cartId);
         }
 
         //Get all of the CartItems in the shopping cart specified by cartId

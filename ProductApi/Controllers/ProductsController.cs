@@ -12,6 +12,7 @@ namespace ProductApi.Controllers
     {
         private ILogger<ProductsController> _logger;
         private IProductRepository _productRepo;
+        
         // Constructor to use the logger
         public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepo)
         {

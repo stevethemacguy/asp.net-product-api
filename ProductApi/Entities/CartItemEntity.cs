@@ -11,7 +11,8 @@ namespace ProductApi.Entities
     {
         //[Key] //Use itemId as the key, instead of just ID
         //public string ItemId { get; set; }
-        public int Id;
+
+        public int Id { get; set; }
 
         //Reference to the Shopping Cart that contains this item. CartItems do not exist without a cart!
         public int CartId { get; set; }
