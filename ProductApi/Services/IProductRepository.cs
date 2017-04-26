@@ -41,7 +41,7 @@ namespace ProductApi.Services
         CartItemEntity GetCartItem(int itemId, int cartId);
 
         //Add a Product to the Cart (or increase the item's quantity by one)
-        void AddItemToCart(int cartId, int productId);
+        void AddItemToCart(int cartId, CartItemEntity cartItemToAdd);
 
         //Remove a CartItem from the Cart (or lower the item's quantity by one)
         void RemoveItemFromCart(CartItemEntity itemToDelete);
@@ -51,7 +51,10 @@ namespace ProductApi.Services
 
         /////// Cart Items \\\\\
         //There are no methods to directly create/remove cartItems. See ShoppingCart methods above.
-        
+        bool CartItemExists(int cartItemId);
+
+        void CreateCartItem(CartItemEntity itemToAdd);
+
         //Required to save new entities to the database context when they are created.
         bool Save();
 

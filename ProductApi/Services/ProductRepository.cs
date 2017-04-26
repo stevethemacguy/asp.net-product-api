@@ -50,8 +50,29 @@ namespace ProductApi.Services
         }
 
         /////// Cart Item Methods \\\\\\\
+        //To be called when adding an item to a cart        
+        public void CreateCartItem(CartItemEntity itemToAdd)
+        {
+            //check if the cartItem already exists in the DB.
+            var itemExists = CartItemExists(itemToAdd.Id);
 
+            //If it doesn't, then add a new one to the DB
+            if (itemExists == false)
+            {
+                //Use the mapper here?
+                _context.CartItems.Add(itemToAdd);
+            }
+        }
 
+        public bool CartItemExists(int cartItemId)
+        {
+            var existingItem = _context.CartItems.FirstOrDefault(i => i.Id == cartItemId);
+            if (existingItem == null)
+            {
+                return false;
+            }
+            return true;
+        }
         ////// Shopping Cart Methods \\\\\\\
 
         public bool ShoppingCartExists(int cartId)
@@ -95,7 +116,7 @@ namespace ProductApi.Services
         public IEnumerable<CartItemEntity> GetShoppingCartItems(int cartId)
         {
             return _context.CartItems
-                .Where(i => i.CartId == cartId).ToList();
+                .Where(i => i.ShoppingCartId == cartId).ToList();
         }
 
         //Retreive a single cart item from the shopping cart specified by cartId and the Item's Id
@@ -103,35 +124,22 @@ namespace ProductApi.Services
         public CartItemEntity GetCartItem(int Id, int cartId)
         {
             return _context.CartItems
-                .FirstOrDefault(i => i.Id == Id && i.CartId == cartId);
+                .FirstOrDefault(i => i.Id == Id && i.ShoppingCartId == cartId);
         }
 
         //Creates a CartItem based on the Product ID and "adds" the CartItem to the cart
         //Add a single cartItem to the ShoppingCart specified. If the item already exists in the cart,
         //then just increase the quantity
-        public void AddItemToCart(int cartId, int productId)
+        public void AddItemToCart(int cartId, CartItemEntity cartItemToAdd)
         {
             var shoppingCart = GetShoppingCart(cartId);
 
-            //See if the ShoppingCart already contains the item
-            var cartItem = _context.CartItems
-                .FirstOrDefault(i => i.CartId == cartId && i.ProductId == productId);
+            //See if the CartItem already exists in the cart
+            var cartItem = shoppingCart.CartItems.FirstOrDefault(i=> i.Id == cartItemToAdd.Id && i.ShoppingCartId == cartItemToAdd.ShoppingCartId);
 
             if (cartItem == null)
             {
-                //create the cart item and add it to the cart
-                //Not possible to use the mapper here since creating a new one?
-                cartItem = new CartItemEntity
-                {
-                    //Id should be created automatically, but if not, create it here
-                    ProductId = productId,
-                    CartId = cartId,
-                    Product = _context.Products.FirstOrDefault(
-                       p => p.Id == productId),
-                    Quantity = 1,
-                };
-
-                shoppingCart.CartItems.Add(cartItem);
+                shoppingCart.CartItems.Add(cartItemToAdd);
             }
             else
             {
@@ -139,13 +147,16 @@ namespace ProductApi.Services
                 // then just increase the quantity.                 
                 cartItem.Quantity++;
             }
+
+            //We just updated the database, so save the changes
+            //var ok = this.Save();
         }
 
         //Remove one item from the cart. If there is more than one quantity of the same item, then just lower the quantity
         public void RemoveItemFromCart(CartItemEntity itemToDelete)
         {
             //Get the shopping cart that holds this unique CartItemEntity
-            var shoppingCart = GetShoppingCart(itemToDelete.CartId);
+            var shoppingCart = GetShoppingCart(itemToDelete.ShoppingCartId);
 
             //Remove the item from the cart
             shoppingCart.CartItems.Remove(itemToDelete);

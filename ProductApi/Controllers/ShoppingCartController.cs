@@ -25,7 +25,7 @@ namespace ProductApi.Controllers
         [HttpGet("{cartId}", Name = "GetShoppingCart")]
         public IActionResult GetShoppingCart(int cartId)
         {
-            //Get the S from the DB. NOTE: You don't return the entities directly, but use the DTO classes instead
+            //Get the Shopping Cart from the DB. NOTE: You don't return the entities directly, but use the DTO classes instead
             var shoppingCartToReturn = _productRepo.GetShoppingCart(cartId);
 
             //Map the entity from the DB to a DTO that the front-end can use
@@ -77,5 +77,81 @@ namespace ProductApi.Controllers
                                    new { cartId = newlyCreatedShoppingCart.Id },
                                    newlyCreatedShoppingCart);
         }
+
+        [HttpGet("{cartId}/addproduct/{productId}", Name = "AddProductToCart")]
+        public IActionResult AddProductToCart(int cartId, int productId)
+        {
+            //Check that the cart exists
+            var cartExists = _productRepo.ShoppingCartExists(cartId);
+
+            if (cartExists == false)
+            {
+                return BadRequest("The shopping cart with id" + cartId + "does not exists");
+            }
+
+            //Get the product from the DB
+            var productEntity = _productRepo.GetProduct(productId);
+
+            //Map the entity to a DTO, so we can created one from the Api request
+            var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
+
+            //Create an ItemDTO. Should maybe be a for creation one
+            var cartItemToAdd = new CartItem
+            {
+                ShoppingCartId = cartId,
+                Quantity = 1,
+                ProductId = productId,
+                Product = productDto
+            };
+
+            //Create a cartItem entity to the DB..don't add it to the cart yet
+            var finalCartItem = AutoMapper.Mapper.Map<Entities.CartItemEntity>(cartItemToAdd);
+            _productRepo.CreateCartItem(finalCartItem);
+
+            //Attempt to save the DB. Todo: redundent?
+            if (!_productRepo.Save())
+            {
+                _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
+
+            //Add the newly created item to the cart. Is this needed? I'm not sure
+            _productRepo.AddItemToCart(cartId, finalCartItem);
+
+            //Attempt to save the DB
+            if (!_productRepo.Save())
+            {
+                _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
+
+            return Ok();
+        }
+
+        //Works, but doesn't add
+        //[HttpGet("{cartId}/addproduct/{productId}", Name = "AddProductToCart")]
+        //public IActionResult AddProductToCart(int cartId, int productId)
+        //{
+        //    //Check that the cart exists
+        //    var cartExists = _productRepo.ShoppingCartExists(cartId);
+
+        //    if (cartExists == false)
+        //    {
+        //        return BadRequest("The shopping cart with id" + cartId + "does not exists");
+        //    }
+
+        //    //Add the item to the cart
+        //    _productRepo.AddItemToCart(cartId, productId);
+
+        //    //Attempt to save the DB
+        //    if (!_productRepo.Save())
+        //    {
+        //        _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
+        //        return StatusCode(500, "A problem occured while handling your request");
+        //    }
+
+        //    return Ok();
+        //}
+
     }
 }

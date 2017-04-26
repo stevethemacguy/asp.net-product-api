@@ -8,6 +8,7 @@ namespace ProductApi.Entities
 {
     public class ShoppingCartEntity
     {
+        //Id of this shopping Cart
         public int Id { get; set; }
 
         //ID of the customer that created this cart
@@ -18,7 +19,7 @@ namespace ProductApi.Entities
             get { return CartItems.Count(); }
         }
 
-        // You could also set this in the constructor
+        // Should this be iEnumerable instead?
         public ICollection<CartItemEntity> CartItems { get; set; }
             = new List<CartItemEntity>();
     }

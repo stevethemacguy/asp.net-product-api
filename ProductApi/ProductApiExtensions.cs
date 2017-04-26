@@ -130,8 +130,18 @@ namespace ProductApi
                 }
             };
 
+            var shoppingCarts = new List<ShoppingCartEntity>()
+            {
+                new ShoppingCartEntity()
+                {
+                    CartItems = new List<CartItemEntity>()
+                }
+            };
+
             //Track the new entities
             context.Products.AddRange(products);
+            context.ShoppingCarts.AddRange(shoppingCarts);
+
             //Since we just added entities to the DB, save changes so that they persist after the application closes.
             context.SaveChanges();
         }

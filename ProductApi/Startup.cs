@@ -7,6 +7,7 @@ using NLog.Extensions.Logging;
 using ProductApi.Services;
 using Microsoft.Extensions.Configuration;
 using ProductApi.Entities;
+using ProductApi.Models;
 
 namespace ProductApi
 {
@@ -98,6 +99,11 @@ namespace ProductApi
 
                 //Map the other for Post (i.e. when creating a Shopping Cart
                 cfg.CreateMap<Models.ShoppingCart, Entities.ShoppingCartEntity>();
+                cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
+                cfg.CreateMap<Models.Product, Entities.ProductEntity>();
+
+                //cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
+                //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
 
                 ////For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
                 //cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();

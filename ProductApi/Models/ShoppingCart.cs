@@ -17,7 +17,7 @@ namespace ProductApi.Models
             get { return CartItems.Count(); }
         }
 
-        // You could also set this in the constructor
+        //This could potentially just be ids, but this seems to make sense
         public ICollection<CartItem> CartItems { get; set; }
             = new List<CartItem>();
     }
