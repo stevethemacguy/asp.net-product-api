@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ProductApi.Entities;
 
@@ -97,20 +98,47 @@ namespace ProductApi.Services
                 .Where(i => i.CartId == cartId).ToList();
         }
 
-        //Retreive a single cart item from the shopping cart specified by cartId and the Item's itemId
+        //Retreive a single cart item from the shopping cart specified by cartId and the Item's Id
         //This probably won't be used since you never need a single cart item
-        public CartItemEntity GetCartItem(int itemId, int cartId)
+        public CartItemEntity GetCartItem(int Id, int cartId)
         {
             return _context.CartItems
-                .FirstOrDefault(i => i.ItemId == itemId && i.CartId == cartId);
+                .FirstOrDefault(i => i.Id == Id && i.CartId == cartId);
         }
 
+        //Creates a CartItem based on the Product ID and "adds" the CartItem to the cart
         //Add a single cartItem to the ShoppingCart specified. If the item already exists in the cart,
         //then just increase the quantity
-        public void AddItemToCart(int cartId, CartItemEntity itemToAdd)
+        public void AddItemToCart(int cartId, int productId)
         {
             var shoppingCart = GetShoppingCart(cartId);
-            shoppingCart.CartItems.Add(itemToAdd);
+
+            //See if the ShoppingCart already contains the item
+            var cartItem = _context.CartItems
+                .FirstOrDefault(i => i.CartId == cartId && i.ProductId == productId);
+
+            if (cartItem == null)
+            {
+                //create the cart item and add it to the cart
+                //Not possible to use the mapper here since creating a new one?
+                cartItem = new CartItemEntity
+                {
+                    //Id should be created automatically, but if not, create it here
+                    ProductId = productId,
+                    CartId = cartId,
+                    Product = _context.Products.FirstOrDefault(
+                       p => p.Id == productId),
+                    Quantity = 1,
+                };
+
+                shoppingCart.CartItems.Add(cartItem);
+            }
+            else
+            {
+                // If the item alreadys exist in the cart,                  
+                // then just increase the quantity.                 
+                cartItem.Quantity++;
+            }
         }
 
         //Remove one item from the cart. If there is more than one quantity of the same item, then just lower the quantity

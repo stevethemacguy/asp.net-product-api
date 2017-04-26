@@ -8,7 +8,7 @@ namespace ProductApi.Models
 {
     public class CartItem
     {
-        public string ItemId { get; set; }
+        public int ItemId { get; set; }
 
         //Reference to the Shopping Cart that contains this item. CartItems do not exist without a cart!
         public string CartId { get; set; }

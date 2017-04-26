@@ -9,8 +9,9 @@ namespace ProductApi.Entities
 {
     public class CartItemEntity
     {
-        [Key] //Use itemId as the key, instead of just ID
-        public int ItemId { get; set; }
+        //[Key] //Use itemId as the key, instead of just ID
+        //public string ItemId { get; set; }
+        public int Id;
 
         //Reference to the Shopping Cart that contains this item. CartItems do not exist without a cart!
         public int CartId { get; set; }
@@ -19,7 +20,7 @@ namespace ProductApi.Entities
         public int Quantity { get; set; }
 
         //Create a foreign key (i.e. navigation property) that points to the related produc that this CartItem represents. 
-        public Product Product { get; set; }
+        public ProductEntity Product { get; set; }
         public int ProductId { get; set; }
     }
 }

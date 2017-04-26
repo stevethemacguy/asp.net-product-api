@@ -40,8 +40,8 @@ namespace ProductApi.Services
         //Get a single CartItem
         CartItemEntity GetCartItem(int itemId, int cartId);
 
-        //Add a CartItem to the Cart (or increase the item's quantity by one)
-        void AddItemToCart(int cartId, CartItemEntity itemToAdd);
+        //Add a Product to the Cart (or increase the item's quantity by one)
+        void AddItemToCart(int cartId, int productId);
 
         //Remove a CartItem from the Cart (or lower the item's quantity by one)
         void RemoveItemFromCart(CartItemEntity itemToDelete);
