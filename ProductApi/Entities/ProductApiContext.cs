@@ -13,5 +13,7 @@ namespace ProductApi.Entities
 
         //Used to query and save Entities to the DB
         public DbSet<ProductEntity> Products { get; set; }
+        public DbSet<CartItemEntity> CartItems { get; set; }
+        public DbSet<ShoppingCartEntity> ShoppingCarts { get; set; }
     }
 }

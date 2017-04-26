@@ -31,18 +31,15 @@ namespace ProductApi.Services
             return _context.Products.FirstOrDefault(p => p.Id == productId);
         }
 
-        //Used to persist changes in the SQL DB (i.e. when you create or delete something from the DB, you must call save on the DB context).
-        public bool Save()
-        {
-            //SaveChanges returns the number of entities that were changed, if any.
-            //In this case, we'll just return true if at least one entity was updated/removed.
-            return (_context.SaveChanges() >= 0);
-        }
-
         public ProductEntity GetProductByName(string name)
         {
             //If we're not including the POIs, then just return the Product
             return _context.Products.FirstOrDefault(p => p.Name == name);
+        }
+
+        public void AddProduct(ProductEntity productToAdd)
+        {
+            _context.Products.Add(productToAdd);
         }
 
         public void DeleteProduct(ProductEntity productToDelete)
@@ -51,9 +48,89 @@ namespace ProductApi.Services
             _context.Products.Remove(productToDelete);
         }
 
-        public void AddProduct()
+        /////// Cart Item Methods \\\\\\\
+
+
+        ////// Shopping Cart Methods \\\\\\\
+
+        public bool ShoppingCartExists(int cartId)
         {
-            throw new System.NotImplementedException();
+            var cart = _context.ShoppingCarts.FirstOrDefault(c => c.CartId == cartId);
+            if (cart == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        //To be called when adding an item to a cart        
+        public int CreateShoppingCart(ShoppingCartEntity cartToAdd)
+        {
+            //check if the cart already exists in the DB.
+            var cartExists = ShoppingCartExists(cartToAdd.CartId);
+
+            //If it doesn't, then add a new Shopping Cart
+            if (cartExists == false)
+            {
+                //Use the mapper here
+                _context.ShoppingCarts.Add(cartToAdd);
+                return cartToAdd.CartId;
+            }
+            //The cart already exists
+            else
+            {
+                return -1;
+            }
+        }
+
+        public ShoppingCartEntity GetShoppingCart(int cartId)
+        {
+            return _context.ShoppingCarts
+                .FirstOrDefault(c => c.CartId == cartId);
+        }
+
+        //Get all of the CartItems in the shopping cart specified by cartId
+        public IEnumerable<CartItemEntity> GetShoppingCartItems(int cartId)
+        {
+            return _context.CartItems
+                .Where(i => i.CartId == cartId).ToList();
+        }
+
+        //Retreive a single cart item from the shopping cart specified by cartId and the Item's itemId
+        //This probably won't be used since you never need a single cart item
+        public CartItemEntity GetCartItem(int itemId, int cartId)
+        {
+            return _context.CartItems
+                .FirstOrDefault(i => i.ItemId == itemId && i.CartId == cartId);
+        }
+
+        //Add a single cartItem to the ShoppingCart specified. If the item already exists in the cart,
+        //then just increase the quantity
+        public void AddItemToCart(int cartId, CartItemEntity itemToAdd)
+        {
+            var shoppingCart = GetShoppingCart(cartId);
+            shoppingCart.CartItems.Add(itemToAdd);
+        }
+
+        //Remove one item from the cart. If there is more than one quantity of the same item, then just lower the quantity
+        public void RemoveItemFromCart(CartItemEntity itemToDelete)
+        {
+            //Get the shopping cart that holds this unique CartItemEntity
+            var shoppingCart = GetShoppingCart(itemToDelete.CartId);
+
+            //Remove the item from the cart
+            shoppingCart.CartItems.Remove(itemToDelete);
+        }
+
+        /////// Database Methods \\\\\\\\
+        
+        //Used to persist changes in the SQL DB (i.e. when you create or delete something from the DB, you must call save on the DB context).
+        public bool Save()
+        {
+            //SaveChanges returns the number of entities that were changed, if any.
+            //In this case, we'll just return true if at least one entity was updated/removed.
+            return (_context.SaveChanges() >= 0);
         }
     }
 }
