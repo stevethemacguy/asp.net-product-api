@@ -17,6 +17,7 @@ namespace ProductApi
                 return;
             }
 
+            var baseImageUrl = "http://dev916.sdunn.net/angular-app/images/";
             //Create the seed data
             var products = new List<ProductEntity>()
             {
@@ -24,109 +25,109 @@ namespace ProductApi
                 {
                     Name = "Apple",
                     Price = 1.50,
-                    ImageUrl = "/apple.png"
+                    ImageUrl = baseImageUrl + "apple.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Pencil",
                     Price = .50,
-                    ImageUrl = "/pencil.png"
+                    ImageUrl = baseImageUrl + "pencil.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Xbox",
                     Price = 199.99,
-                    ImageUrl = "/xbox.png"
+                    ImageUrl = baseImageUrl + "xbox.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Sony Camera",
                     Price = 60.00,
-                    ImageUrl = "/camera.png"
+                    ImageUrl = baseImageUrl + "camera.png"
                 },
                 new ProductEntity()
                 {
                     Name = "LOTR Trilogy; Blue Ray",
                     Price = 49.99,
-                    ImageUrl = "/dvd.png"
+                    ImageUrl = baseImageUrl + "dvd.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Band aids",
                     Price = 2.50,
-                    ImageUrl = "/band.png"
+                    ImageUrl = baseImageUrl + "band.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Apple pie",
                     Price = 4.00,
-                    ImageUrl = "/pie.png"
+                    ImageUrl = baseImageUrl + "pie.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Tennis ball (x10)",
                     Price = 5.49,
-                    ImageUrl = "/ball.png"
+                    ImageUrl = baseImageUrl + "ball.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Diamond necklace",
                     Price = 20000,
-                    ImageUrl = "/diamond.png"
+                    ImageUrl = baseImageUrl + "diamond.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Hand grenade",
                     Price = 15.00,
-                    ImageUrl = "/grenade.png"
+                    ImageUrl = baseImageUrl + "grenade.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Printer",
                     Price = 150.00,
-                    ImageUrl = "/printer.png"
+                    ImageUrl = baseImageUrl + "printer.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Monitor",
                     Price = 335.00,
-                    ImageUrl = "/monitor.png"
+                    ImageUrl = baseImageUrl + "monitor.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Book",
                     Price = 5.00,
-                    ImageUrl = "/book.png"
+                    ImageUrl = baseImageUrl + "book.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Couch",
                     Price = 110.00,
-                    ImageUrl = "/couch.gif"
+                    ImageUrl = baseImageUrl + "couch.gif"
                 },
                 new ProductEntity()
                 {
                     Name = "Silverware",
                     Price = 150.00,
-                    ImageUrl = "/silver.png"
+                    ImageUrl = baseImageUrl + "silver.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Watch",
                     Price = 189.00,
-                    ImageUrl = "/watch.png"
+                    ImageUrl = baseImageUrl + "watch.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Flowers",
                     Price = 15.00,
-                    ImageUrl = "/flowers.png"
+                    ImageUrl = baseImageUrl + "flowers.png"
                 },
                 new ProductEntity()
                 {
                     Name = "Cup",
                     Price = 40,
-                    ImageUrl = "/cup.png"
+                    ImageUrl = baseImageUrl + "cup.png"
                 }
             };
 
