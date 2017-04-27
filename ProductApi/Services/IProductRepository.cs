@@ -55,6 +55,9 @@ namespace ProductApi.Services
 
         void CreateCartItem(CartItemEntity itemToAdd);
 
+        //Delete a CartItem (i.e. this effectively "removes" and item from a shopping cart
+        void DeleteCartItem(CartItemEntity itemToDelete);
+
         //Required to save new entities to the database context when they are created.
         bool Save();
 

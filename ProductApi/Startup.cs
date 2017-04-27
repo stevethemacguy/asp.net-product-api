@@ -108,9 +108,9 @@ namespace ProductApi
                 cfg.CreateMap<Models.Product, Entities.ProductEntity>();
 
                 //For Post
-                //cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
-                //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
-                //cfg.CreateMap<Entities.CartItemEntity,Models.CartItemForCreation>();
+                cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
+                cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
+                cfg.CreateMap<Entities.CartItemEntity, Models.CartItemForCreation>();
 
                 //cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
                 //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();

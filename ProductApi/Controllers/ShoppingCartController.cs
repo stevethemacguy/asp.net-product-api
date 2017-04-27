@@ -120,83 +120,93 @@ namespace ProductApi.Controllers
                                    newlyCreatedShoppingCart);
         }
 
-        [HttpGet("{cartId}/addproduct/{productId}", Name = "AddProductToCart")]
-        public IActionResult AddProductToCart(int cartId, int productId)
+        //[HttpGet("{cartId}/addproduct/{productId}", Name = "AddProductToCart")]
+        //public IActionResult AddProductToCart(int cartId, int productId)
+        //{
+        //    //Check that the cart exists
+        //    var cartExists = _productRepo.ShoppingCartExists(cartId);
+
+        //    if (cartExists == false)
+        //    {
+        //        return BadRequest("The shopping cart with id" + cartId + "does not exists");
+        //    }
+
+        //    //Get the product from the DB
+        //    var productEntity = _productRepo.GetProduct(productId);
+
+        //    //Map the entity to a DTO, so we can created one from the Api request
+        //    var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
+
+        //    //var productEntity = _productRepo.GetProducts()
+        //    //    .SingleOrDefault(p => p.Id == productId);
+
+        //    //var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
+        //    //Create an ItemDTO. Should maybe be a for creation one
+        //    var cartItemToAdd = new CartItem
+        //    {
+        //        ShoppingCartId = cartId,
+        //        Quantity = 1,
+        //        ProductId = productId,
+        //        Product = productDto,
+        //    };
+
+        //    //Create a cartItem entity to the DB..don't add it to the cart yet
+        //    var finalCartItem = AutoMapper.Mapper.Map<Entities.CartItemEntity>(cartItemToAdd);
+        //    _productRepo.CreateCartItem(finalCartItem);
+
+        //    //Attempt to save the DB. Todo: redundent?
+        //    if (!_productRepo.Save())
+        //    {
+        //        _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
+        //        return StatusCode(500, "A problem occured while handling your request");
+        //    }
+
+        //    //Add the newly created item to the cart. Is this needed? I'm not sure
+        //    _productRepo.AddItemToCart(cartId, finalCartItem);
+
+        //    //Get the shoppingCart that we just updated, so we can overwrite the old cart 
+        //    //Get the POI entity that's in the DB, so we can update it.
+        //    //var cartToUpdate = _productRepo.GetShoppingCart(cartId);
+
+        //    //var temp = new ShoppingCartEntity();
+        //    //temp.CartItems.Add(finalCartItem);
+        //    //// The first argument is the new Object you're using to overwrite the existing entity. The second argument is the existing entity in the DB
+        //    //_productRepo.CreateShoppingCart(temp);
+
+        //    //Attempt to save the DB
+        //    if (!_productRepo.Save())
+        //    {
+        //        _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
+        //        return StatusCode(500, "A problem occured while handling your request");
+        //    }
+
+        //    return Ok();
+        //}
+
+
+        [HttpPost("{cartId}/addproduct/{productId}", Name = "AddProductToSingleCart")]
+        public IActionResult AddProductToSingleCart(int cartId, int productId)
         {
-            //Check that the cart exists
-            var cartExists = _productRepo.ShoppingCartExists(cartId);
 
-            if (cartExists == false)
+            // See if the product that was passed exists in the database
+            var theProductExists = _productRepo.ProductExists(productId);
+
+            if (!theProductExists)
             {
-                return BadRequest("The shopping cart with id" + cartId + "does not exists");
+                ModelState.AddModelError("Invalid Product ID", "A Product with this ID does not exists.");
+                return BadRequest(ModelState);
             }
 
-            //Get the product from the DB
-            var productEntity = _productRepo.GetProduct(productId);
-
-            //Map the entity to a DTO, so we can created one from the Api request
-            var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
-
-            //var productEntity = _productRepo.GetProducts()
-            //    .SingleOrDefault(p => p.Id == productId);
-
-            //var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
-            //Create an ItemDTO. Should maybe be a for creation one
-            var cartItemToAdd = new CartItem
-            {
-                ShoppingCartId = cartId,
-                Quantity = 1,
-                ProductId = productId,
-                Product = productDto,
-            };
-
-            //Create a cartItem entity to the DB..don't add it to the cart yet
-            var finalCartItem = AutoMapper.Mapper.Map<Entities.CartItemEntity>(cartItemToAdd);
-            _productRepo.CreateCartItem(finalCartItem);
-
-            //Attempt to save the DB. Todo: redundent?
-            if (!_productRepo.Save())
-            {
-                _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
-                return StatusCode(500, "A problem occured while handling your request");
-            }
-
-            //Add the newly created item to the cart. Is this needed? I'm not sure
-            _productRepo.AddItemToCart(cartId, finalCartItem);
-
-            //Get the shoppingCart that we just updated, so we can overwrite the old cart 
-            //Get the POI entity that's in the DB, so we can update it.
-            //var cartToUpdate = _productRepo.GetShoppingCart(cartId);
-
-            //var temp = new ShoppingCartEntity();
-            //temp.CartItems.Add(finalCartItem);
-            //// The first argument is the new Object you're using to overwrite the existing entity. The second argument is the existing entity in the DB
-            //_productRepo.CreateShoppingCart(temp);
-
-            //Attempt to save the DB
-            if (!_productRepo.Save())
-            {
-                _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
-                return StatusCode(500, "A problem occured while handling your request");
-            }
-
-            return Ok();
-        }
-
-
-        [HttpPost("{cartId}/addproduct", Name = "AddProductToSingleCart")]
-        public IActionResult AddProductToSingleCart(int cartId, [FromBody] Product productToAdd)
-        {
-            //The product comes from the post body, so create a ProductEntity by mapping it from the productToAdd
-            var productEntity = AutoMapper.Mapper.Map<Entities.ProductEntity>(productToAdd);
+            //The product comes from the post body and is of type productForCreation.
+            //Since we created a mapping for this in the mapper (see startup.cs), we can create a Product entity by mapping it from the ProductForCreation.
+            var currentProductEntity = _productRepo.GetProduct(productId);
 
             //Create an ItemDTO from the productEntity.
             var cartItemToAdd = new CartItemEntity()
             {
                 ShoppingCartId = cartId,
                 Quantity = 1,
-                ProductId = productEntity.Id,
-                Product = productEntity
+                ProductId = currentProductEntity.Id,
             };
 
             //Add the cartItem entity to the DB. Current there is no concept of a "shopping cart".
@@ -212,7 +222,34 @@ namespace ProductApi.Controllers
             return Ok();
         }
 
-        //Works, but doesn't add
+
+        [HttpDelete("{cartId}/removeproduct/{productId}")]
+        public IActionResult RemoveProductFromSingleCart(int cartId, int productId)
+        {
+            //See if the productID matches a cartItem (i.e. whether the product is "in the cart")
+            var cartItemEntities = _productRepo.GetShoppingCartItems(cartId);
+
+            var itemInCart = cartItemEntities.FirstOrDefault(c => c.ProductId == productId);
+
+            if (itemInCart == null)
+            {
+                return NotFound();
+            }
+
+            //Delete the CartItemEntity
+            _productRepo.DeleteCartItem(itemInCart);
+
+            //Since we just removed an entity form the DB, save changes on the repo to ensure the change persists.
+            if (!_productRepo.Save())
+            {
+                _logger.LogInformation("The attempt to delete a Product from the database FAILED.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
+
+            return NoContent();
+        }
+
+        //Works, but doesn't add to the shopping cart in SQL fro some reason
         //[HttpGet("{cartId}/addproduct/{productId}", Name = "AddProductToCart")]
         //public IActionResult AddProductToCart(int cartId, int productId)
         //{

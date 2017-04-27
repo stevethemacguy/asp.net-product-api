@@ -150,6 +150,11 @@ namespace ProductApi.Services
 
         }
 
+        public void DeleteCartItem(CartItemEntity itemToDelete)
+        {
+            _context.CartItems.Remove(itemToDelete);
+        }
+
         //Remove one item from the cart. If there is more than one quantity of the same item, then just lower the quantity
         public void RemoveItemFromCart(CartItemEntity itemToDelete)
         {
