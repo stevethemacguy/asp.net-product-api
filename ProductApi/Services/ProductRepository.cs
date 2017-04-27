@@ -148,8 +148,6 @@ namespace ProductApi.Services
                 cartItem.Quantity++;
             }
 
-            //We just updated the database, so save the changes
-            //var ok = this.Save();
         }
 
         //Remove one item from the cart. If there is more than one quantity of the same item, then just lower the quantity

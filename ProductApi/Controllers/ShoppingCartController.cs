@@ -27,14 +27,27 @@ namespace ProductApi.Controllers
         [HttpGet("{cartId}", Name = "GetShoppingCart")]
         public IActionResult GetShoppingCart(int cartId)
         {
-            //Get the Shopping Cart from the DB. NOTE: You don't return the entities directly, but use the DTO classes instead
-            var shoppingCartToReturn = _productRepo.GetShoppingCart(cartId);
+            //Get the Shopping Cart from the DB.
+            //Multiple carts aren't currently supported, so we return all cartItems that match the cartID (instead of finding a shopping cart entity)
+            var cartItemEntities = _productRepo.GetShoppingCartItems(cartId);
 
-            //Map the entity from the DB to a DTO that the front-end can use
-            var cartToReturn = AutoMapper.Mapper.Map<ShoppingCart>(shoppingCartToReturn);
+            //Map the CartItem entities to the DTO classes using automapper
+            var allCartItems= AutoMapper.Mapper.Map<IEnumerable<CartItem>>(cartItemEntities);
 
-            return Ok(cartToReturn);
+            return Ok(allCartItems);
         }
+
+        //[HttpGet("{cartId}", Name = "GetShoppingCart")]
+        //public IActionResult GetShoppingCart(int cartId)
+        //{
+        //    //Get the Shopping Cart from the DB. NOTE: You don't return the entities directly, but use the DTO classes instead
+        //    var shoppingCartToReturn = _productRepo.GetShoppingCart(cartId);
+
+        //    //Map the entity from the DB to a DTO that the front-end can use
+        //    var cartToReturn = AutoMapper.Mapper.Map<ShoppingCart>(shoppingCartToReturn);
+
+        //    return Ok(cartToReturn);
+        //}
 
         [HttpPost("createCart")]
         public IActionResult CreateShoppingCart([FromBody] ShoppingCart cartToAdd)
@@ -97,13 +110,17 @@ namespace ProductApi.Controllers
             //Map the entity to a DTO, so we can created one from the Api request
             var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
 
+            //var productEntity = _productRepo.GetProducts()
+            //    .SingleOrDefault(p => p.Id == productId);
+
+            //var productDto = AutoMapper.Mapper.Map<Product>(productEntity);
             //Create an ItemDTO. Should maybe be a for creation one
             var cartItemToAdd = new CartItem
             {
                 ShoppingCartId = cartId,
                 Quantity = 1,
                 ProductId = productId,
-                Product = productDto
+                Product = productDto,
             };
 
             //Create a cartItem entity to the DB..don't add it to the cart yet
