@@ -91,38 +91,16 @@ namespace ProductApi
             AutoMapper.Mapper.Initialize(cfg =>
             {
                 //Syntax is CreateMap(SourceType, DestinationType). In other words: From an Entity to a DTO object
-                //cfg.CreateMap<Entities.ProductEntity, Models.CityWithoutPointsOfInterestDto>();
-
                 cfg.CreateMap<Entities.ProductEntity, Models.Product>();
-
-                //Is this one needed?
                 cfg.CreateMap<Entities.ProductEntity, Models.ProductForCreation>();
                 cfg.CreateMap<Entities.ShoppingCartEntity, Models.ShoppingCart>();
                 cfg.CreateMap<Entities.CartItemEntity, Models.CartItem>();
 
-                //Map the other for Post (i.e. when creating a Shopping Cart
+                //Map the other for Post Requests
                 cfg.CreateMap<Models.ShoppingCart, Entities.ShoppingCartEntity>();
-
                 cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
-
                 cfg.CreateMap<Models.Product, Entities.ProductEntity>();
-
-                //For Post
                 cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
-                cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
-                cfg.CreateMap<Entities.CartItemEntity, Models.CartItemForCreation>();
-
-                //cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
-                //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
-
-                ////For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
-                //cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();
-
-                ////For updating with PUT
-                //cfg.CreateMap<Models.PointOfInterestForUpdate, Entities.PointOfInterest>();
-
-                ////For updating with Patch. We need the other way around since we're mapping an entity to a POIForUpdate dto.
-                //cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForUpdate>();
             });
 
             //Enable CORS

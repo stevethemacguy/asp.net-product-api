@@ -94,7 +94,6 @@ namespace ProductApi.Controllers
                 return BadRequest();
             }
 
-            //The product comes from the post body and is of type productForCreation.
             //Since we created a mapping for this in the mapper (see startup.cs), we can create a ShoppingCart entity by mapping it from the ShoppingCart
             var finalCartToAdd = AutoMapper.Mapper.Map<Entities.ShoppingCartEntity>(cartToAdd);
             _productRepo.CreateShoppingCart(finalCartToAdd);
@@ -197,8 +196,6 @@ namespace ProductApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            //The product comes from the post body and is of type productForCreation.
-            //Since we created a mapping for this in the mapper (see startup.cs), we can create a Product entity by mapping it from the ProductForCreation.
             var currentProductEntity = _productRepo.GetProduct(productId);
 
             //Create an ItemDTO from the productEntity.
