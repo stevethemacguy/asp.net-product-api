@@ -24,7 +24,7 @@ namespace ProductApi.Controllers
             _productRepo = productRepo;
         }
 
-        [HttpGet("{cartId}", Name = "GetShoppingCart")]
+        [HttpGet("{cartId}")]
         public IActionResult GetShoppingCart(int cartId)
         {
             //Get the Shopping Cart from the DB.
@@ -35,6 +35,33 @@ namespace ProductApi.Controllers
             var allCartItems= AutoMapper.Mapper.Map<IEnumerable<CartItem>>(cartItemEntities);
 
             return Ok(allCartItems);
+        }
+
+        [HttpGet("{cartId}/getproducts", Name = "GetShoppingCartProducts")]
+        public IActionResult GetShoppingCartProducts(int cartId)
+        {
+            //Get the cart items
+            var cartItemEntities = _productRepo.GetShoppingCartItems(cartId);
+
+            //Map the CartItem entities to the DTO classes using automapper
+            var allCartItems = AutoMapper.Mapper.Map<IEnumerable<CartItem>>(cartItemEntities);
+
+            //Build a list of products from the cart items and return that to the FE
+            List<Product> allProducts = new List<Product>();
+
+            foreach (var cartItem in allCartItems)
+            {
+                //Get the associated product
+                var productEntity = _productRepo.GetProduct(cartItem.ProductId);
+
+                //Convert the productEntity into a DTO that the FE can use.
+                var productToReturn = AutoMapper.Mapper.Map<Product>(productEntity);
+
+                //Add it to the list to return
+                allProducts.Add(productToReturn);
+            }
+
+            return Ok(allProducts);
         }
 
         //[HttpGet("{cartId}", Name = "GetShoppingCart")]

@@ -102,13 +102,15 @@ namespace ProductApi
 
                 //Map the other for Post (i.e. when creating a Shopping Cart
                 cfg.CreateMap<Models.ShoppingCart, Entities.ShoppingCartEntity>();
+
                 cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
+
                 cfg.CreateMap<Models.Product, Entities.ProductEntity>();
 
                 //For Post
-                cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
-                cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
-                cfg.CreateMap<Entities.CartItemEntity,Models.CartItemForCreation>();
+                //cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
+                //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
+                //cfg.CreateMap<Entities.CartItemEntity,Models.CartItemForCreation>();
 
                 //cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
                 //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
