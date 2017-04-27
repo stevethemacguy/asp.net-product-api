@@ -94,6 +94,9 @@ namespace ProductApi
                 //cfg.CreateMap<Entities.ProductEntity, Models.CityWithoutPointsOfInterestDto>();
 
                 cfg.CreateMap<Entities.ProductEntity, Models.Product>();
+
+                //Is this one needed?
+                cfg.CreateMap<Entities.ProductEntity, Models.ProductForCreation>();
                 cfg.CreateMap<Entities.ShoppingCartEntity, Models.ShoppingCart>();
                 cfg.CreateMap<Entities.CartItemEntity, Models.CartItem>();
 
@@ -101,6 +104,11 @@ namespace ProductApi
                 cfg.CreateMap<Models.ShoppingCart, Entities.ShoppingCartEntity>();
                 cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
                 cfg.CreateMap<Models.Product, Entities.ProductEntity>();
+
+                //For Post
+                cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
+                cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
+                cfg.CreateMap<Entities.CartItemEntity,Models.CartItemForCreation>();
 
                 //cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
                 //cfg.CreateMap<Models.CartItemForCreation, Entities.CartItemEntity>();
@@ -118,7 +126,9 @@ namespace ProductApi
             //Enable CORS
             app.UseCors(builder =>
                     builder.WithOrigins(Startup.Configuration["allowedCorsOrigins:macLocalHost"])
+                     .AllowAnyOrigin()
                     .AllowAnyHeader()
+                    .AllowAnyMethod()
             );
 
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProductApi.Models;
 using Microsoft.Extensions.Logging;
+using ProductApi.Entities;
 using ProductApi.Services;
 
 namespace ProductApi.Controllers
@@ -118,7 +120,45 @@ namespace ProductApi.Controllers
             //Add the newly created item to the cart. Is this needed? I'm not sure
             _productRepo.AddItemToCart(cartId, finalCartItem);
 
+            //Get the shoppingCart that we just updated, so we can overwrite the old cart 
+            //Get the POI entity that's in the DB, so we can update it.
+            //var cartToUpdate = _productRepo.GetShoppingCart(cartId);
+
+            //var temp = new ShoppingCartEntity();
+            //temp.CartItems.Add(finalCartItem);
+            //// The first argument is the new Object you're using to overwrite the existing entity. The second argument is the existing entity in the DB
+            //_productRepo.CreateShoppingCart(temp);
+
             //Attempt to save the DB
+            if (!_productRepo.Save())
+            {
+                _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
+
+            return Ok();
+        }
+
+
+        [HttpPost("{cartId}/addproduct", Name = "AddProductToSingleCart")]
+        public IActionResult AddProductToSingleCart(int cartId, [FromBody] Product productToAdd)
+        {
+            //The product comes from the post body, so create a ProductEntity by mapping it from the productToAdd
+            var productEntity = AutoMapper.Mapper.Map<Entities.ProductEntity>(productToAdd);
+
+            //Create an ItemDTO from the productEntity.
+            var cartItemToAdd = new CartItemEntity()
+            {
+                ShoppingCartId = cartId,
+                Quantity = 1,
+                ProductId = productEntity.Id,
+                Product = productEntity
+            };
+
+            //Add the cartItem entity to the DB. Current there is no concept of a "shopping cart".
+            //However, the CartEntity is aware of it's cart id (we only need one cart, so the cart ID should always be one)
+            _productRepo.CreateCartItem(cartItemToAdd);
+
             if (!_productRepo.Save())
             {
                 _logger.LogInformation("There was a problem when trying to add the product to the ShoppingCart");
