@@ -9,7 +9,16 @@
     <WarningLevel>2</WarningLevel>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>Steven Dunn</Authors>
+  </PropertyGroup>
+
   <ItemGroup>
+    <None Remove="Properties\PublishProfiles\FolderProfile.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
