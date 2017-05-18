@@ -22,8 +22,8 @@ namespace ProductApi
             //The last file added wins.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appSettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
@@ -36,8 +36,10 @@ namespace ProductApi
             services.AddMvc();
 
             //Set up the SQL Server connection
-            var connectionString = Startup.Configuration["connectionStrings:productApiDBConnectionString"];
-            
+            //var connectionString = Startup.Configuration["connectionStrings:productApiDBConnectionString"];
+            var connectionString = Startup.Configuration["connectionStrings:DefaultConnection"];
+
+
             //Add the DB context so we can inject it into our classes
             services.AddDbContext<ProductApiContext>(o => o.UseSqlServer(connectionString));
 
@@ -78,6 +80,7 @@ namespace ProductApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
             else
             {
