@@ -37,7 +37,9 @@ namespace ProductApi
 
             //Set up the SQL Server connection
             //var connectionString = Startup.Configuration["connectionStrings:productApiDBConnectionString"];
-            var connectionString = Startup.Configuration["connectionStrings:DefaultConnection"];
+            //var connectionString = Startup.Configuration["connectionStrings:DefaultConnection"];
+            var connectionString = Startup.Configuration["connectionStrings:GitHubConnection"]; 
+            
 
 
             //Add the DB context so we can inject it into our classes

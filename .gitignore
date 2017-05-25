@@ -14,10 +14,10 @@ nlog.config
 [Tt]humbs.db
 *.dll
 
-# AppSettings I don't want publically visible
-**/appsettings.json
-**/appsettings.development.json
-**/appsettings.production.json
+# Hide AppSettings. The public version: appSettings.json will still be exposed. This is required to use Azure Continous Integration with GitHub##
+#appsettings.json
+appsettings.development.json
+appsettings.production.json
 
 #Visual Studio Build Files
 [Oo]bj
