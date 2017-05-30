@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
@@ -33,6 +35,7 @@ namespace ProductApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddMvc();
 
             //Set up the SQL Server connection
@@ -49,6 +52,26 @@ namespace ProductApi
 
             //Scoped creates the ProductRepository once per request.
             services.AddScoped<IProductRepository, ProductRepository>();
+
+            //Add the Identity services for user authentication. Use our custom "User" Class and use the built-in IdentityRole Class
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<ProductApiContext>(); //Use to generate Identity-related entities to our Database
+
+            //If you want to use the built-in User and Role classes, you would just use the following:
+            //services.AddIdentity<IdentityUser, IdentityRole>();
+
+            //Use the built-in default classes like this:
+            //.AddDefaultTokenProviders();
+
+
+            //Not sure if this is needed
+            //services.AddEntityFramework();
+
+            // You could do this all in one line if you want
+            //services.AddEntityFramework()
+            //    .AddSqlServer()
+            //    .AddDbContext<ProductApiContext>(options =>
+            //        options.UseSqlServer(connectionString));
 
             //If you want to return UpperCase property names instead of camelCase. For new applications,
             //you'll probably want camelCase (the .Net Core default), but if you're working with Old MVC apps, then you may want uppercase.
@@ -90,6 +113,9 @@ namespace ProductApi
             {
                 app.UseExceptionHandler();
             }
+
+            //This must come BEFORE use MVC!
+            app.UseIdentity();
 
             //Seed the database with data
             productApiContext.EnsureSeedDataForContext();

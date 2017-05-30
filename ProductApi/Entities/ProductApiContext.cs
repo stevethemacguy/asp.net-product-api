@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProductApi.Entities
 {
-    public class ProductApiContext : DbContext
+    public class ProductApiContext : IdentityDbContext<User>
     {
         public ProductApiContext(DbContextOptions<ProductApiContext> options): base(options)
         {
