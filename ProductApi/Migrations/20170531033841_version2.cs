@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ProductApi.Migrations
 {
-    public partial class AddedAuthenticationUsingTheIdentityFramework : Migration
+    public partial class version2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AspNetRoles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
+              name: "AspNetRoles",
+              columns: table => new
+              {
+                  Id = table.Column<string>(nullable: false),
+                  ConcurrencyStamp = table.Column<string>(nullable: true),
+                  Name = table.Column<string>(maxLength: 256, nullable: true),
+                  NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
+              },
+              constraints: table =>
+              {
+                  table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+              });
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
@@ -36,21 +36,6 @@ namespace ProductApi.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                 });
-
-            migrationBuilder.CreateTable(
-               name: "Products",
-               columns: table => new
-               {
-                   Id = table.Column<int>(nullable: false)
-                       .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                   ImageUrl = table.Column<string>(nullable: true),
-                   Name = table.Column<string>(maxLength: 40, nullable: false),
-                   Price = table.Column<double>(nullable: false)
-               },
-               constraints: table =>
-               {
-                   table.PrimaryKey("PK_Products", x => x.Id);
-               });
 
             migrationBuilder.CreateTable(
                 name: "ShoppingCarts",
@@ -255,32 +240,7 @@ namespace ProductApi.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
 
-            migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
-
-            migrationBuilder.DropTable(
-                name: "CartItems");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "ShoppingCarts");
         }
     }
 }
