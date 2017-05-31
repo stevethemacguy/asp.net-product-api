@@ -55,13 +55,11 @@ namespace ProductApi
 
             //Add the Identity services for user authentication. Use our custom "User" Class and use the built-in IdentityRole Class
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<ProductApiContext>(); //Use to generate Identity-related entities to our Database
+                .AddEntityFrameworkStores<ProductApiContext>() //Use to generate Identity-related entities to our Database
+                .AddDefaultTokenProviders();
 
             //If you want to use the built-in User and Role classes, you would just use the following:
             //services.AddIdentity<IdentityUser, IdentityRole>();
-
-            //Use the built-in default classes like this:
-            //.AddDefaultTokenProviders();
 
 
             //Not sure if this is needed
@@ -114,7 +112,7 @@ namespace ProductApi
                 app.UseExceptionHandler();
             }
 
-            //This must come BEFORE use MVC!
+            //Add cookie-based authentication. This must come BEFORE use MVC!
             app.UseIdentity();
 
             //Seed the database with data
