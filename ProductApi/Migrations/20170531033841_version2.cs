@@ -38,6 +38,21 @@ namespace ProductApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+               name: "Products",
+               columns: table => new
+               {
+                   Id = table.Column<int>(nullable: false)
+                       .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                   ImageUrl = table.Column<string>(nullable: true),
+                   Name = table.Column<string>(maxLength: 40, nullable: false),
+                   Price = table.Column<double>(nullable: false)
+               },
+               constraints: table =>
+               {
+                   table.PrimaryKey("PK_Products", x => x.Id);
+               });
+
+            migrationBuilder.CreateTable(
                 name: "ShoppingCarts",
                 columns: table => new
                 {
