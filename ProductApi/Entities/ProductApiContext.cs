@@ -9,6 +9,8 @@ namespace ProductApi.Entities
         {
             //If the DB is not yet created, then create it with our entity objects.
             Database.EnsureCreated();
+
+            //This should really be used, but don't have the time to fix it given the current deadline.
             //Database.Migrate();
         }
 

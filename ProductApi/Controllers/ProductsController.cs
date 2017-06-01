@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using ProductApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using ProductApi.Services;
 
 namespace ProductApi.Controllers
 {
+    //[Authorize]
     [Route("api/products")]
     public class ProductsController : Controller
     {
