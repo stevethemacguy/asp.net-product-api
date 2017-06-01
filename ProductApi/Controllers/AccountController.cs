@@ -62,8 +62,9 @@ namespace ProductApi.Controllers
                         ModelState.AddModelError("", error.Description);
                     }
 
+                    return BadRequest(ModelState);
                     //.Net's default
-                    return Unauthorized();
+                    //return Unauthorized();
                 }
             }
             else

@@ -8,7 +8,7 @@ using ProductApi.Services;
 
 namespace ProductApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/products")]
     public class ProductsController : Controller
     {

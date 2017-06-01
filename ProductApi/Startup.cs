@@ -136,10 +136,18 @@ namespace ProductApi
 
             //Enable CORS
             app.UseCors(builder =>
-                    builder.WithOrigins(Startup.Configuration["allowedCorsOrigins:macLocalHost"])
-                     .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
+                    builder.WithOrigins(Startup.Configuration["allowedCorsOrigins:macLocalHost"],
+                                        Startup.Configuration["allowedCorsOrigins:macPublic"],
+                                        "http://localhost:3000/login")
+                    .WithHeaders("accept", "content-type", "origin")
+                    .WithMethods("POST", "GET", "PUT","DELETE","OPTIONS")
+                    .AllowCredentials()
+                    //.AllowAnyOrigin()
+                    //.AllowAnyHeader()
+                    
+                    //.AllowAnyMethod()
+
+                    //"AccessControlAllowHeaders": "Content-Type,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5,  Date, X-Api-Version, X-File-Name",
             );
 
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)
