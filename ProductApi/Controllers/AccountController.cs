@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using NLog;
 using ProductApi.Entities;
 using ProductApi.Models;
 
@@ -12,12 +14,14 @@ namespace ProductApi.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private ILogger<AccountController> _logger;
         //        private readonly RoleManager<MyIdentityRole> roleManager;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -44,7 +48,7 @@ namespace ProductApi.Controllers
                     //isPersistent is whether to store a session cookie (if it's false) or a more permanent cookie if it's true.
 
                     await _signInManager.SignInAsync(newUser, isPersistent: false);
-                    //_logger.LogInformation(3, "User created a new account with password.");
+                    _logger.LogInformation(3, "User created a new account with password.");
 
                     return Ok();
                     //If you were using a view this is how you would redirect
@@ -68,16 +72,71 @@ namespace ProductApi.Controllers
             }
         }
 
-        //private IActionResult RedirectToLocal(string returnUrl)
-        //{
-        //    if (Url.IsLocalUrl(returnUrl))
-        //    {
-        //        return Redirect(returnUrl);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //}
+        [HttpPost("logout")]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            //Remove the cookie from the browser
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation(4, "User logged out.");
+            return Ok();
+            //return Redirect("home");
+            //return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login([FromBody]LoginModel model, string returnUrl = null)
+        {
+            //ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation(1, "User logged in.");
+
+                    //If they were on their way to a url, send them there after they're logged in.
+                    return RedirectToLocal(returnUrl);
+                    //return Redirect("home");
+                    //return Redirect(returnUrl);
+                }
+                //if (result.RequiresTwoFactor)
+                //{
+                //    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                //}
+                //if (result.IsLockedOut)
+                //{
+                //    _logger.LogWarning(2, "User account locked out.");
+                //    return View("Lockout");
+                //}
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return BadRequest(model);
+                }
+            }
+
+            //If we got this far, something failed.
+            return BadRequest(model);
+        }
+
+        //Prevent open redirect security issue
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Ok();
+                //return Redirect("home");
+                //return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }

@@ -8,8 +8,10 @@ namespace ProductApi.Entities
         public ProductApiContext(DbContextOptions<ProductApiContext> options): base(options)
         {
             //If the DB is not yet created, then create it with our entity objects.
-            //Database.EnsureCreated();
-            Database.Migrate();
+            Database.EnsureCreated();
+
+            //This should really be used, but don't have the time to fix it given the current deadline.
+            //Database.Migrate();
         }
 
         //Used to query and save Entities to the DB
