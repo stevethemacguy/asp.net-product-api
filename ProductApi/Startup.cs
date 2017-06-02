@@ -178,12 +178,19 @@ namespace ProductApi
 
             //Enable CORS
             app.UseCors(builder =>
-                    builder.WithOrigins(Startup.Configuration["allowedCorsOrigins:macLocalHost"],
-                                        Startup.Configuration["allowedCorsOrigins:macPublic"])
-                    .WithHeaders("accept", "content-type", "origin")
-                    .WithMethods("POST", "GET", "PUT","DELETE","OPTIONS")
-                    .AllowCredentials()
-                    
+                    builder.AllowCredentials()
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+
+                    //This works locally, but is causing errors on production when using IIS Integration.
+                    //Pheraps because I need to accept more headers and don't know the heroku IP address.
+                    //builder.WithOrigins(Startup.Configuration["allowedCorsOrigins:macLocalHost"],
+                    //                    Startup.Configuration["allowedCorsOrigins:macPublic"])
+                    //.WithHeaders("accept", "content-type", "origin")
+                    //.WithMethods("POST", "GET", "PUT","DELETE","OPTIONS")
+                    //.AllowCredentials()
+
                     // You can normally use this, but when you send FE requests using credentials, the browser requires that 
                     // you use a more strict cors policy like the one above.
                     //.AllowAnyOrigin()
