@@ -45,11 +45,8 @@ namespace ProductApi.Controllers
 
                 return Ok(roles);
             }
-
-            return BadRequest(ModelState);
+            return Ok("unauthorized");
         }
-
-        
 
         [HttpPost("register")]
         [AllowAnonymous]
@@ -98,6 +95,7 @@ namespace ProductApi.Controllers
                     //There was a problem, so include the errors in the model state that's returned by the register action
                     foreach (var error in result.Errors)
                     {
+                        //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
                         ModelState.AddModelError("errorMessages", error.Description);
                     }
 
@@ -171,13 +169,14 @@ namespace ProductApi.Controllers
                 //}
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return BadRequest(model);
+                    //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                    ModelState.AddModelError("errorMessages", "Invalid login attempt.");
+                    return BadRequest(ModelState);
                 }
             }
 
             //If we got this far, something failed.
-            return BadRequest(model);
+            return BadRequest(ModelState);
         }
 
         //Prevent open redirect security issue

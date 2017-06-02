@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -52,6 +55,50 @@ namespace ProductApi
 
             //Scoped creates the ProductRepository once per request.
             services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                //options.Password.RequireDigit = true;
+                //options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                //options.Password.RequireLowercase = false;
+
+                // Lockout settings
+                //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                //options.Lockout.MaxFailedAccessAttempts = 10;
+
+                // Cookie settings
+                //options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays(150);
+                //options.Cookies.ApplicationCookie.LoginPath = "/login";
+                //options.Cookies.ApplicationCookie.LogoutPath = "/register";
+
+                //By default, the Identity framework redirects users to a login page when they are unathorized (i.e. not logged in).
+                //Since this application is an API only (i.e. there are no front-end views), this doesn't work. The code below makes it so 
+                //instead of returning a 302 redirect url, a 401 is returned instead, which allows the Front End to handle it differently.
+                //With angular, for example, you can redirect use user to the login page using $state.go or $location (depending on the router you're using).
+                options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api") &&
+                            ctx.Response.StatusCode == (int)HttpStatusCode.OK)
+                        {
+                            ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+                        return Task.FromResult(0);
+                    }
+                };
+
+                // User settings
+                //options.User.RequireUniqueEmail = true;
+            });
+
 
             //Add the Identity services for user authentication. Use our custom "User" Class and use the built-in IdentityRole Class
             services.AddIdentity<User, IdentityRole>()
