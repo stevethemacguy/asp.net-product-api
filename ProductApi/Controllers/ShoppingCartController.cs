@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductApi.Models;
@@ -11,6 +12,7 @@ using ProductApi.Services;
 
 namespace ProductApi.Controllers
 {
+    [Authorize]
     [Route("api/cart")]
     public class ShoppingCartController : Controller
     {
