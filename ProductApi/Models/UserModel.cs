@@ -20,6 +20,13 @@ namespace ProductApi.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
+        //Whether the user is an admin or not. Used to set the role with the identity framework
+        public string Role { get; set; }
+
+        //A string description of the role to make accessing the roleType easier (not required by the Identity Framework).
+        //This will be a custom "claim", which is basically just a key/value pair that we're adding the to user
+        public string RoleType { get; set; }
+
         //public string FirstName{ get; set; }
         //public string LastName { get; set; }
     }

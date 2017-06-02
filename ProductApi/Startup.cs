@@ -56,6 +56,7 @@ namespace ProductApi
             //Add the Identity services for user authentication. Use our custom "User" Class and use the built-in IdentityRole Class
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ProductApiContext>() //Use to generate Identity-related entities to our Database
+                //TokenProviders are used for 2-way or external authentication, or when using a token service, etc.
                 .AddDefaultTokenProviders();
 
             //If you want to use the built-in User and Role classes, you would just use the following:
@@ -144,10 +145,7 @@ namespace ProductApi
                     .AllowCredentials()
                     //.AllowAnyOrigin()
                     //.AllowAnyHeader()
-                    
                     //.AllowAnyMethod()
-
-                    //"AccessControlAllowHeaders": "Content-Type,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5,  Date, X-Api-Version, X-File-Name",
             );
 
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)

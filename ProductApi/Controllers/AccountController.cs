@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -14,15 +16,40 @@ namespace ProductApi.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager; //should this be <user>?
         private ILogger<AccountController> _logger;
-        //        private readonly RoleManager<MyIdentityRole> roleManager;
-
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger)
+        
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
         }
+
+        [HttpGet("getuserroles")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUserRoles()
+        {
+            //Get the current User
+            //System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+            //bool IsAdmin = currentUser.IsInRole("Admin");
+            //var id = _userManager.GetUserId(User); // Get user id:
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user != null)
+            {
+                // Get the roles for the user
+                var roles = await _userManager.GetRolesAsync(user);
+
+                return Ok(roles);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        
 
         [HttpPost("register")]
         [AllowAnonymous]
@@ -32,25 +59,37 @@ namespace ProductApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var newUser = new User { UserName = user.Email, Email = user.Email};
+                var newUser = new User {
+                    UserName = user.Email,
+                    Email = user.Email,
+                };
                 //Pass the newly created user and their password to the _userManager to create it in the SQL DB.
                 var result = await _userManager.CreateAsync(newUser, user.Password);
+
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
+                    //If the roles do not yet exist in the Database, then create the roles in the DB. This is a one-time creation
+                    //If the roles already exists in the DB, then this won't do anything.
+                    if (!await _roleManager.RoleExistsAsync("basic"))
+                        await _roleManager.CreateAsync(new IdentityRole("basic")); //IdentityRole
+                    if (!await _roleManager.RoleExistsAsync("admin"))
+                        await _roleManager.CreateAsync(new IdentityRole("admin"));
+
+                    //A claim is just a key/value pair. I'm adding a custom "roleType" claim to make it easier for the FE to use the roleType.
+                    await _userManager.AddClaimAsync(newUser, new Claim("roleType", user.RoleType));
+
+                    //Add the role to the new user
+                    await _userManager.AddToRoleAsync(newUser, user.Role);
+
+                    //If you want to send an email registration, see the sample .Net Core authorization project.
 
                     //Now that a User was successfully created, go ahead and sign them in.
                     //isPersistent is whether to store a session cookie (if it's false) or a more permanent cookie if it's true.
-
                     await _signInManager.SignInAsync(newUser, isPersistent: false);
                     _logger.LogInformation(3, "User created a new account with password.");
 
                     return Ok();
+                    //return Ok(newUser);
                     //If you were using a view this is how you would redirect
                     //return RedirectToLocal(returnUrl);
                 }
@@ -59,7 +98,7 @@ namespace ProductApi.Controllers
                     //There was a problem, so include the errors in the model state that's returned by the register action
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError("", error.Description);
+                        ModelState.AddModelError("errorMessages", error.Description);
                     }
 
                     return BadRequest(ModelState);
@@ -72,6 +111,17 @@ namespace ProductApi.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        //Delete a user
+        // POST: Users/Delete/5
+        //[HttpPost("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteUser(int id)
+        //{
+        //    var user = await _userManager.FindByIdAsync(id.ToString());
+        //    var result = await _userManager.DeleteAsync(user);
+        //    return RedirectToAction("Index");
+        //}
 
         [HttpPost("logout")]
         //[ValidateAntiForgeryToken]
@@ -101,6 +151,11 @@ namespace ProductApi.Controllers
                     _logger.LogInformation(1, "User logged in.");
 
                     //If they were on their way to a url, send them there after they're logged in.
+
+                    //Redirect on the front-end. Just return the result so we have the login credentials.
+                    //return Ok(result);
+
+                    //Redirect with .Net
                     return RedirectToLocal(returnUrl);
                     //return Redirect("home");
                     //return Redirect(returnUrl);
