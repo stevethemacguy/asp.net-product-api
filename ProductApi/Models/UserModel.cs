@@ -5,6 +5,9 @@ namespace ProductApi.Models
 {
     public class UserModel
     {
+        //public string FirstName{ get; set; }
+        //public string LastName { get; set; }
+
         [Required]
         [EmailAddress]
         public string Email { get; set; }
@@ -14,8 +17,8 @@ namespace ProductApi.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        //DataType.password is used to hide the charactors on the screen. Compare just compares the value of confirmPassword
-        //to Password, but I think this is more for if you're using a Razor view.
+        //DataType.password is used to hide the charactors on the screen, but I think this is more for if you're using a Razor view.
+        //Compare just compares the value of confirmPassword to Password.
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
@@ -26,8 +29,5 @@ namespace ProductApi.Models
         //A string description of the role to make accessing the roleType easier (not required by the Identity Framework).
         //This will be a custom "claim", which is basically just a key/value pair that we're adding the to user
         public string RoleType { get; set; }
-
-        //public string FirstName{ get; set; }
-        //public string LastName { get; set; }
     }
 }

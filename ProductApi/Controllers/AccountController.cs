@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NLog;
 using ProductApi.Entities;
 using ProductApi.Models;
 
@@ -17,7 +16,7 @@ namespace ProductApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager; //should this be <user>?
-        private ILogger<AccountController> _logger;
+        private readonly ILogger<AccountController> _logger;
         
         public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager)
         {
@@ -31,27 +30,22 @@ namespace ProductApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetUserRoles()
         {
-            //Get the current User
-            //System.Security.Claims.ClaimsPrincipal currentUser = this.User;
-            //bool IsAdmin = currentUser.IsInRole("Admin");
-            //var id = _userManager.GetUserId(User); // Get user id:
-
             var user = await _userManager.GetUserAsync(User);
 
             if (user != null)
             {
-                // Get the roles for the user
+                // Return the roles for the user (an array of roles)
                 var roles = await _userManager.GetRolesAsync(user);
-
                 return Ok(roles);
             }
+            //Returning 401 or 400 results in an empty response on the FE. Using a 200 response is a work around.
             return Ok("unauthorized");
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        //Should take in a user object with an email and password
+        //Creates a new User with the user object passed and assigns a role to that user (either "basic" or "admin").
         public async Task<IActionResult> Register([FromBody] UserModel user)
         {
             if (ModelState.IsValid)
@@ -65,14 +59,14 @@ namespace ProductApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    //If the roles do not yet exist in the Database, then create the roles in the DB. This is a one-time creation
-                    //If the roles already exists in the DB, then this won't do anything.
+                    //If the roles do not yet exist in the Database, then create the roles in the DB. 
+                    //This is a one-time creation. If the roles already exists, then this has no effect.
                     if (!await _roleManager.RoleExistsAsync("basic"))
                         await _roleManager.CreateAsync(new IdentityRole("basic")); //IdentityRole
                     if (!await _roleManager.RoleExistsAsync("admin"))
                         await _roleManager.CreateAsync(new IdentityRole("admin"));
 
-                    //A claim is just a key/value pair. I'm adding a custom "roleType" claim to make it easier for the FE to use the roleType.
+                    //A claim is just a key/value pair. Add a custom "roleType" claim to make it easier for the FE to use the roleType.
                     await _userManager.AddClaimAsync(newUser, new Claim("roleType", user.RoleType));
 
                     //Add the role to the new user
@@ -100,8 +94,6 @@ namespace ProductApi.Controllers
                     }
 
                     return BadRequest(ModelState);
-                    //.Net's default
-                    //return Unauthorized();
                 }
             }
             else
@@ -110,10 +102,10 @@ namespace ProductApi.Controllers
             }
         }
 
-        //Delete a user
+        //Delete a user. I haven't tested this, but it might be needed down the role.
         // POST: Users/Delete/5
         //[HttpPost("Delete")]
-        //[ValidateAntiForgeryToken]
+        ////[ValidateAntiForgeryToken]
         //public async Task<IActionResult> DeleteUser(int id)
         //{
         //    var user = await _userManager.FindByIdAsync(id.ToString());
@@ -129,8 +121,8 @@ namespace ProductApi.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
             return Ok();
+            //If we were using .Net Razor views, we could redirect the browser with a 302 response instead.
             //return Redirect("home");
-            //return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         [HttpPost("login")]
@@ -138,7 +130,6 @@ namespace ProductApi.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody]LoginModel model, string returnUrl = null)
         {
-            //ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
@@ -149,12 +140,11 @@ namespace ProductApi.Controllers
                     _logger.LogInformation(1, "User logged in.");
 
                     //If they were on their way to a url, send them there after they're logged in.
-
-                    //Redirect on the front-end. Just return the result so we have the login credentials.
-                    //return Ok(result);
-
-                    //Redirect with .Net
+                    //This hasn't been tested, but the FE should be able to redirect them. You could also return an Ok()
+                    //with the return URL intead of a redirect, since the redirect might only work with a Razor view.
                     return RedirectToLocal(returnUrl);
+                    
+                    //Redirect with .Net
                     //return Redirect("home");
                     //return Redirect(returnUrl);
                 }
@@ -169,7 +159,7 @@ namespace ProductApi.Controllers
                 //}
                 else
                 {
-                    //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                    //IMPORTANT: The string "errorMessages" actually names the object "errorMessages" so you can access it on the front-end
                     ModelState.AddModelError("errorMessages", "Invalid login attempt.");
                     return BadRequest(ModelState);
                 }
@@ -188,8 +178,10 @@ namespace ProductApi.Controllers
             }
             else
             {
-                return Ok();
-                //return Redirect("home");
+                //Since our front-end views use angular, we have to return a 200 instead of doing a direct redirect.
+                return Ok(returnUrl);
+                
+                //If you're using Razor views, you can re-direct the user directly like this:
                 //return RedirectToAction("Index", "Home");
             }
         }

@@ -8,6 +8,7 @@ namespace ProductApi.Entities
         public ProductApiContext(DbContextOptions<ProductApiContext> options): base(options)
         {
             //If the DB is not yet created, then create it with our entity objects.
+            //DO NOT use this when starting a new project! Use Database.migrate instead.
             Database.EnsureCreated();
 
             //This should really be used, but don't have the time to fix it given the current deadline.

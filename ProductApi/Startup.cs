@@ -38,16 +38,15 @@ namespace ProductApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddMvc();
 
-            //Set up the SQL Server connection
+            //Old connectionString
             //var connectionString = Startup.Configuration["connectionStrings:productApiDBConnectionString"];
 
-            // Use to connect to the SQL DB on Azure (the one being used with VS TS)
+            //Used this to connect to the SQL DB on Azure (the one being used with VS TS)
             var connectionString = Startup.Configuration["connectionStrings:DefaultConnection"];
 
-            // Use to connect to the Github SQL DB (the one being used with my GitHub service)
+            //Use this to connect to the Github SQL DB (the one being used with my GitHub service)
             //var connectionString = Startup.Configuration["connectionStrings:GitHubConnection"]; 
             
             //Add the DB context so we can inject it into our classes
@@ -58,32 +57,31 @@ namespace ProductApi
 
             services.Configure<IdentityOptions>(options =>
             {
-                // Password settings
+                //Password settings
                 //options.Password.RequireDigit = true;
                 //options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 //options.Password.RequireLowercase = false;
 
-                // Lockout settings
+                //Lockout settings
                 //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
                 //options.Lockout.MaxFailedAccessAttempts = 10;
 
-                // Cookie settings
+                //Cookie settings
                 //options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays(150);
                 //options.Cookies.ApplicationCookie.LoginPath = "/login";
                 //options.Cookies.ApplicationCookie.LogoutPath = "/register";
 
                 //By default, the Identity framework redirects users to a login page when they are unathorized (i.e. not logged in).
-                //Since this application is an API only (i.e. there are no front-end views), this doesn't work. The code below makes it so 
+                //Since ProductApi is an API only (i.e. there are no front-end views), this will not work. The code below makes it so 
                 //instead of returning a 302 redirect url, a 401 is returned instead, which allows the Front End to handle it differently.
-                //With angular, for example, you can redirect use user to the login page using $state.go or $location (depending on the router you're using).
+                //With angular, for example, you can redirect the user to the login page using $state.go or $location (depending on the router).
                 options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
                 {
                     OnRedirectToLogin = ctx =>
                     {
-                        if (ctx.Request.Path.StartsWithSegments("/api") &&
-                            ctx.Response.StatusCode == (int)HttpStatusCode.OK)
+                        if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == (int)HttpStatusCode.OK)
                         {
                             ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         }
@@ -99,8 +97,8 @@ namespace ProductApi
                 //options.User.RequireUniqueEmail = true;
             });
 
-
-            //Add the Identity services for user authentication. Use our custom "User" Class and use the built-in IdentityRole Class
+            //Add the Identity framework for user authentication. Use our custom "User" Class and use the built-in IdentityRole Class
+            //You can also extend the built in IdentityRole. If you do, then you will need to update the databaseContext and schema as well.
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ProductApiContext>() //Use to generate Identity-related entities to our Database
                 //TokenProviders are used for 2-way or external authentication, or when using a token service, etc.
@@ -109,11 +107,7 @@ namespace ProductApi
             //If you want to use the built-in User and Role classes, you would just use the following:
             //services.AddIdentity<IdentityUser, IdentityRole>();
 
-
-            //Not sure if this is needed
-            //services.AddEntityFramework();
-
-            // You could do this all in one line if you want
+            // You can do this all in one line if you want
             //services.AddEntityFramework()
             //    .AddSqlServer()
             //    .AddDbContext<ProductApiContext>(options =>
@@ -130,7 +124,6 @@ namespace ProductApi
             //               castedResolver.NamingStrategy = null;
             //       }
             //   });
-
 
             //If you want to return XML instead of JSON when the consuming app specifies an XMLL "content-type"
             //services.AddMvc()
@@ -160,10 +153,11 @@ namespace ProductApi
                 app.UseExceptionHandler();
             }
 
-            //Add cookie-based authentication. This must come BEFORE use MVC!
+            //Add cookie-based authentication. This must come BEFORE use MVC! When use Identity is enabled,
+            //this will return 302 redirects instead of a 401: Unauthorized
             app.UseIdentity();
 
-            //Seed the database with data
+            //Seed the database with data. You may want to seed data directly with SQL commands instead (e.g. with a PowerShell script).
             productApiContext.EnsureSeedDataForContext();
 
             //Create mappings from the application's DTOs to their respective entity classes returned from Sql.
@@ -185,11 +179,13 @@ namespace ProductApi
             //Enable CORS
             app.UseCors(builder =>
                     builder.WithOrigins(Startup.Configuration["allowedCorsOrigins:macLocalHost"],
-                                        Startup.Configuration["allowedCorsOrigins:macPublic"],
-                                        "http://localhost:3000/login")
+                                        Startup.Configuration["allowedCorsOrigins:macPublic"])
                     .WithHeaders("accept", "content-type", "origin")
                     .WithMethods("POST", "GET", "PUT","DELETE","OPTIONS")
                     .AllowCredentials()
+                    
+                    // You can normally use this, but when you send FE requests using credentials, the browser requires that 
+                    // you use a more strict cors policy like the one above.
                     //.AllowAnyOrigin()
                     //.AllowAnyHeader()
                     //.AllowAnyMethod()
@@ -199,10 +195,7 @@ namespace ProductApi
             //app.UseStatusCodePages();
             app.UseMvc();
 
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
+           //Do I need app.run here?
         }
     }
 }
