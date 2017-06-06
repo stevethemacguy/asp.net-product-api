@@ -26,6 +26,31 @@ namespace ProductApi.Controllers
             _roleManager = roleManager;
         }
 
+        [HttpGet("getcurrentuser")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                //Limit the information that we return for the user.
+                var userObject = new
+                {
+                    email = user.Email,
+                    id = user.Id,
+                    userName = user.UserName,
+                    roles = await _userManager.GetRolesAsync(user)
+                };
+
+                return Ok(userObject);
+            }
+        }
+
         [HttpGet("getuserroles")]
         [AllowAnonymous]
         public async Task<IActionResult> GetUserRoles()
