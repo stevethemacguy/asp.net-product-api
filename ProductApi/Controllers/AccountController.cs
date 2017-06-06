@@ -1,15 +1,20 @@
-﻿using System.Security.Claims;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ProductApi.Entities;
 using ProductApi.Models;
 
 namespace ProductApi.Controllers
 {
+    [Authorize]
     [Route("api/account")]
     public class AccountController: Controller
     {
@@ -27,7 +32,6 @@ namespace ProductApi.Controllers
         }
 
         [HttpGet("getcurrentuser")]
-        [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -49,6 +53,34 @@ namespace ProductApi.Controllers
 
                 return Ok(userObject);
             }
+        }
+
+        [HttpGet("getusers")]
+        //Use this to restrict this action to admins. This works but returns a 404 if the logged in user does not have the admin role.
+        //[Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetUsers()
+        {
+            //Get the complete list of users
+            var users = await _userManager.Users.ToListAsync();
+
+            if (users == null)
+            {
+                return NotFound();
+            }
+
+            //Build a list of users that contains only the data we want to expose to the front-end
+            var userList = new ArrayList();
+            foreach (var curUser in users)
+            {
+                var tempUser = new UserModel()
+                {
+                    Role = (await _userManager.GetRolesAsync(curUser)).FirstOrDefault(),
+                    RoleType = (await _userManager.GetRolesAsync(curUser)).FirstOrDefault(),
+                    Email = curUser.Email
+                };
+                userList.Add(tempUser);
+            }
+            return Ok(userList);
         }
 
         [HttpGet("getuserroles")]
