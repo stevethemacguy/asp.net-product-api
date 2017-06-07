@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -97,6 +96,101 @@ namespace ProductApi.Controllers
             }
             //Returning 401 or 400 results in an empty response on the FE. Using a 200 response is a work around.
             return Ok("unauthorized");
+        }
+
+        [HttpGet("changeUserRole")]
+        public async Task<IActionResult> ChangeUserRole(string email, string roleToRemove, string roleToAdd)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            //Remove the specified role if the user has it
+            var result = await _userManager.RemoveFromRoleAsync(user, roleToRemove);
+
+            //Return the errors if the actions fails
+            if (!result.Succeeded)
+            {
+                //There was a problem, so include the errors in the model state that's returned by the register action
+                foreach (var error in result.Errors)
+                {
+                    //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                    ModelState.AddModelError("errorMessages", error.Description);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            //Add the specified role to the user (e.g. make the user an "admin")
+            var addResult = await _userManager.AddToRoleAsync(user, roleToAdd);
+
+            //Return the errors if the actions fails
+            if (!addResult.Succeeded)
+            {
+                //There was a problem, so include the errors in the model state that's returned by the register action
+                foreach (var error in addResult.Errors)
+                {
+                    //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                    ModelState.AddModelError("errorMessages", error.Description);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
+        }
+
+        //Delete a user. I haven't tested this, but it might be needed down the role.
+        // POST: Users/Delete/5
+        //[HttpPost("Delete")]
+        ////[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteUser(int id)
+        //{
+        //    var user = await _userManager.FindByIdAsync(id.ToString());
+        //    var result = await _userManager.DeleteAsync(user);
+        //    return RedirectToAction("Index");
+        //}
+
+        [HttpPost("removeUser")]
+        public async Task<IActionResult> RemoveUser(string email)
+        {
+            if (ModelState.IsValid)
+            {
+                var userToDelete = await _userManager.FindByEmailAsync(email);
+                var logins = userToDelete.Logins;
+                var userRoles = await _userManager.GetRolesAsync(userToDelete);
+
+                //using (var transaction = context.Database.BeginTransaction())
+                //{
+                //    foreach (var login in logins.ToList())
+                //    {
+                //        await _userManager.RemoveLoginAsync(login.UserId, new UserLoginInfo(userlo.LoginProvider, login.ProviderKey));
+                //    }
+
+                //    if (userRoles.Count() > 0)
+                //    {
+                //        foreach (var item in userRoles.ToList())
+                //        {
+                //            // item should be the name of the role
+                //            var result = await _userManager.RemoveFromRoleAsync(user.Id, item);
+                //        }
+                //    }
+
+                //    await _userManager.DeleteAsync(user);
+                //    transaction.commit();
+                //}
+
+                //Remove the user's roles
+                foreach (var roleName in userRoles)
+                {
+                    var deletionResult = await _userManager.RemoveFromRoleAsync(userToDelete, roleName);
+                }
+
+                await _userManager.DeleteAsync(userToDelete);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
 
         [HttpPost("register")]
