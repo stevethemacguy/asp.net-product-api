@@ -149,43 +149,42 @@ namespace ProductApi.Controllers
         //    return RedirectToAction("Index");
         //}
 
-        [HttpPost("removeUser")]
+        [HttpGet("removeUser")]
         public async Task<IActionResult> RemoveUser(string email)
         {
             if (ModelState.IsValid)
             {
                 var userToDelete = await _userManager.FindByEmailAsync(email);
-                var logins = userToDelete.Logins;
-                var userRoles = await _userManager.GetRolesAsync(userToDelete);
 
-                //using (var transaction = context.Database.BeginTransaction())
-                //{
-                //    foreach (var login in logins.ToList())
-                //    {
-                //        await _userManager.RemoveLoginAsync(login.UserId, new UserLoginInfo(userlo.LoginProvider, login.ProviderKey));
-                //    }
+                //Some examples show removing user roles too, but it seems that .Net already does this
+                //var logins = userToDelete.Logins;
+                //var userRoles = await _userManager.GetRolesAsync(userToDelete);
 
-                //    if (userRoles.Count() > 0)
-                //    {
-                //        foreach (var item in userRoles.ToList())
-                //        {
-                //            // item should be the name of the role
-                //            var result = await _userManager.RemoveFromRoleAsync(user.Id, item);
-                //        }
-                //    }
-
-                //    await _userManager.DeleteAsync(user);
-                //    transaction.commit();
-                //}
-
-                //Remove the user's roles
-                foreach (var roleName in userRoles)
+                if (userToDelete.Email == null)
                 {
-                    var deletionResult = await _userManager.RemoveFromRoleAsync(userToDelete, roleName);
+                    return BadRequest(ModelState);
                 }
 
-                await _userManager.DeleteAsync(userToDelete);
-                return Ok();
+                var result = await _userManager.DeleteAsync(userToDelete);
+
+                ////Remove the user's roles
+                //foreach (var roleName in userRoles)
+                //{
+                //    var deletionResult = await _userManager.RemoveFromRoleAsync(userToDelete, roleName);
+                //}
+
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                
+                //There was a problem, so include the errors in the model state that's returned by the register action
+                foreach (var error in result.Errors)
+                {
+                    //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                    ModelState.AddModelError("errorMessages", error.Description);
+                }
+                return BadRequest(ModelState);
             }
             else
             {
