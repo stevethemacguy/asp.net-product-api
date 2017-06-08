@@ -113,15 +113,20 @@ namespace ProductApi.Services
         }
 
         //Get all of the CartItems in the shopping cart specified by cartId
-        public IEnumerable<CartItemEntity> GetShoppingCartItems(int cartId)
+        public IEnumerable<CartItemEntity> GetShoppingCartItems(string cartId)
         {
-            return _context.CartItems
-                .Where(i => i.ShoppingCartId == cartId).ToList();
+            var cartItems = _context.CartItems;
+            if (!cartItems.Any())
+            {
+                return null;
+            }
+            //var cartItems = _context.CartItems.Where(i => i.ShoppingCartId == cartId);
+            return _context.CartItems.Where(i => i.ShoppingCartId == cartId).ToList();
         }
 
         //Retreive a single cart item from the shopping cart specified by cartId and the Item's Id
         //This probably won't be used since you never need a single cart item
-        public CartItemEntity GetCartItem(int Id, int cartId)
+        public CartItemEntity GetCartItem(int Id, string cartId)
         {
             return _context.CartItems
                 .FirstOrDefault(i => i.Id == Id && i.ShoppingCartId == cartId);
@@ -156,14 +161,14 @@ namespace ProductApi.Services
         }
 
         //Remove one item from the cart. If there is more than one quantity of the same item, then just lower the quantity
-        public void RemoveItemFromCart(CartItemEntity itemToDelete)
-        {
-            //Get the shopping cart that holds this unique CartItemEntity
-            var shoppingCart = GetShoppingCart(itemToDelete.ShoppingCartId);
+        //public void RemoveItemFromCart(CartItemEntity itemToDelete)
+        //{
+        //    //Get the shopping cart that holds this unique CartItemEntity
+        //    var shoppingCart = GetShoppingCart(itemToDelete.ShoppingCartId);
 
-            //Remove the item from the cart
-            shoppingCart.CartItems.Remove(itemToDelete);
-        }
+        //    //Remove the item from the cart
+        //    shoppingCart.CartItems.Remove(itemToDelete);
+        //}
 
         /////// Database Methods \\\\\\\\
         

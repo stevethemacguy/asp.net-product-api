@@ -12,7 +12,7 @@ namespace ProductApi.Models
         public int Id { get; set; }
 
         //Reference to the Shopping Cart that contains this item. CartItems do not exist without a cart!
-        public int ShoppingCartId { get; set; }
+        public string ShoppingCartId { get; set; }
 
         //How many of this CartItem are in the Cart
         public int Quantity { get; set; }

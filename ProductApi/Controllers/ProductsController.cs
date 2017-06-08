@@ -115,7 +115,7 @@ namespace ProductApi.Controllers
         }
 
         //USE PUT TO UPDATE
-        [HttpPut("{productId}/pointsOfInterest/{poiId}", Name = "Updateproduct")]
+        //[HttpPut("{productId}/pointsOfInterest/{poiId}", Name = "Updateproduct")]
         //public IActionResult Updateproduct(int productId, int poiId, 
         //    [FromBody] productForUpdate product)
         //{

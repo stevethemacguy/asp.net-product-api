@@ -35,16 +35,16 @@ namespace ProductApi.Services
         ShoppingCartEntity GetShoppingCart(int cartId);
 
         //Get all of products (i.e. cartItems) from the Shopping Cart
-        IEnumerable<CartItemEntity> GetShoppingCartItems(int cartId);
+        IEnumerable<CartItemEntity> GetShoppingCartItems(string cartId);
 
         //Get a single CartItem
-        CartItemEntity GetCartItem(int itemId, int cartId);
+        CartItemEntity GetCartItem(int itemId, string cartId);
 
         //Add a Product to the Cart (or increase the item's quantity by one)
         void AddItemToCart(int cartId, CartItemEntity cartItemToAdd);
 
         //Remove a CartItem from the Cart (or lower the item's quantity by one)
-        void RemoveItemFromCart(CartItemEntity itemToDelete);
+        //void RemoveItemFromCart(CartItemEntity itemToDelete);
 
         //Check whether an item is in the cart (probably not needed
         //bool CartItemIsInCart(int cartItemId);

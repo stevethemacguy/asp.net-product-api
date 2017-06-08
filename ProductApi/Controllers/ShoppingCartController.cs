@@ -27,7 +27,7 @@ namespace ProductApi.Controllers
         }
 
         [HttpGet("{cartId}")]
-        public IActionResult GetShoppingCart(int cartId)
+        public IActionResult GetShoppingCart(string cartId)
         {
             //Get the Shopping Cart from the DB.
             //Multiple carts aren't currently supported, so we return all cartItems that match the cartID (instead of finding a shopping cart entity)
@@ -40,7 +40,7 @@ namespace ProductApi.Controllers
         }
 
         [HttpGet("{cartId}/getproducts", Name = "GetShoppingCartProducts")]
-        public IActionResult GetShoppingCartProducts(int cartId)
+        public IActionResult GetShoppingCartProducts(string cartId)
         {
             //Get the cart items
             var cartItemEntities = _productRepo.GetShoppingCartItems(cartId);
@@ -50,6 +50,11 @@ namespace ProductApi.Controllers
 
             //Build a list of products from the cart items and return that to the FE
             List<Product> allProducts = new List<Product>();
+
+            if (allCartItems == null)
+            {
+                return Ok(null);
+            }
 
             foreach (var cartItem in allCartItems)
             {
@@ -186,9 +191,8 @@ namespace ProductApi.Controllers
 
 
         [HttpPost("{cartId}/addproduct/{productId}", Name = "AddProductToSingleCart")]
-        public IActionResult AddProductToSingleCart(int cartId, int productId)
+        public IActionResult AddProductToSingleCart(string cartId, int productId)
         {
-
             // See if the product that was passed exists in the database
             var theProductExists = _productRepo.ProductExists(productId);
 
@@ -223,7 +227,7 @@ namespace ProductApi.Controllers
 
 
         [HttpDelete("{cartId}/removeproduct/{productId}")]
-        public IActionResult RemoveProductFromSingleCart(int cartId, int productId)
+        public IActionResult RemoveProductFromSingleCart(string cartId, int productId)
         {
             //See if the productID matches a cartItem (i.e. whether the product is "in the cart")
             var cartItemEntities = _productRepo.GetShoppingCartItems(cartId);

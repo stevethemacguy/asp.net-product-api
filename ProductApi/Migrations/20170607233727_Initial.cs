@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ProductApi.Migrations
 {
-    public partial class AddedAuthenticationUsingTheIdentityFramework : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -38,19 +38,19 @@ namespace ProductApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-               name: "Products",
-               columns: table => new
-               {
-                   Id = table.Column<int>(nullable: false)
-                       .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                   ImageUrl = table.Column<string>(nullable: true),
-                   Name = table.Column<string>(maxLength: 40, nullable: false),
-                   Price = table.Column<double>(nullable: false)
-               },
-               constraints: table =>
-               {
-                   table.PrimaryKey("PK_Products", x => x.Id);
-               });
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 40, nullable: false),
+                    Price = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "ShoppingCarts",
@@ -73,8 +73,6 @@ namespace ProductApi.Migrations
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
@@ -121,7 +119,7 @@ namespace ProductApi.Migrations
                     ProductId = table.Column<int>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     ShoppingCartEntityId = table.Column<int>(nullable: true),
-                    ShoppingCartId = table.Column<int>(nullable: false)
+                    ShoppingCartId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -278,6 +276,9 @@ namespace ProductApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "ShoppingCarts");

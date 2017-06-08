@@ -134,7 +134,7 @@ namespace ProductApi.Migrations
 
                     b.Property<int?>("ShoppingCartEntityId");
 
-                    b.Property<int>("ShoppingCartId");
+                    b.Property<string>("ShoppingCartId");
 
                     b.HasKey("Id");
 
@@ -187,10 +187,6 @@ namespace ProductApi.Migrations
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
-
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
 
                     b.Property<bool>("LockoutEnabled");
 
