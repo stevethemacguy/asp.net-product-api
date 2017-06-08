@@ -145,17 +145,10 @@ namespace ProductApi.Controllers
             {
                 var userToPromote = await _userManager.FindByEmailAsync(email);
 
-                //Some examples show removing user roles too, but it seems that .Net already does this
-                //var logins = userToDelete.Logins;
-                //var userRoles = await _userManager.GetRolesAsync(userToDelete);
-
                 if (userToPromote.Email == null)
                 {
                     return BadRequest(ModelState);
                 }
-
-                //A claim is just a key/value pair. Add a custom "roleType" claim to make it easier for the FE to use the roleType.
-                //await _userManager.AddClaimAsync(newUser, new Claim("roleType", user.RoleType));
 
                 //Add the role to the new user
                 var addResult = await _userManager.AddToRoleAsync(userToPromote, "admin");
@@ -182,6 +175,18 @@ namespace ProductApi.Controllers
                         ModelState.AddModelError("errorMessages", error.Description);
                     }
                 }
+
+                //Get the old role so we can remove it
+                var userClaims = await _userManager.GetClaimsAsync(userToPromote);
+
+                foreach (var userClaim in userClaims)
+                {
+                    //Remove the old claim
+                    await _userManager.RemoveClaimAsync(userToPromote, userClaim);
+                }
+
+                //A claim is just a key/value pair. Add a custom "roleType" claim to make it easier for the FE to use the roleType.
+                await _userManager.AddClaimAsync(userToPromote, new Claim("roleType", "admin"));
 
                 if (deletionResult.Succeeded && addResult.Succeeded)
                 {
