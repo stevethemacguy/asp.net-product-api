@@ -138,16 +138,60 @@ namespace ProductApi.Controllers
             return Ok();
         }
 
-        //Delete a user. I haven't tested this, but it might be needed down the role.
-        // POST: Users/Delete/5
-        //[HttpPost("Delete")]
-        ////[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteUser(int id)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id.ToString());
-        //    var result = await _userManager.DeleteAsync(user);
-        //    return RedirectToAction("Index");
-        //}
+        [HttpGet("makeAdmin")]
+        public async Task<IActionResult> MakeAdmin(string email)
+        {
+            if (ModelState.IsValid)
+            {
+                var userToPromote = await _userManager.FindByEmailAsync(email);
+
+                //Some examples show removing user roles too, but it seems that .Net already does this
+                //var logins = userToDelete.Logins;
+                //var userRoles = await _userManager.GetRolesAsync(userToDelete);
+
+                if (userToPromote.Email == null)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                //A claim is just a key/value pair. Add a custom "roleType" claim to make it easier for the FE to use the roleType.
+                //await _userManager.AddClaimAsync(newUser, new Claim("roleType", user.RoleType));
+
+                //Add the role to the new user
+                var addResult = await _userManager.AddToRoleAsync(userToPromote, "admin");
+
+                if (!addResult.Succeeded)
+                {
+                    //There was a problem, so include the errors in the model state that's returned by the register action
+                    foreach (var error in addResult.Errors)
+                    {
+                        //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                        ModelState.AddModelError("errorMessages", error.Description);
+                    }
+                }
+
+                //Remove old role
+                var deletionResult = await _userManager.RemoveFromRoleAsync(userToPromote, "basic");
+
+                if (!deletionResult.Succeeded)
+                {
+                    //There was a problem, so include the errors in the model state that's returned by the register action
+                    foreach (var error in deletionResult.Errors)
+                    {
+                        //The string errorMessages actually names the object "errorMessages" so you can easily access it on the front-end
+                        ModelState.AddModelError("errorMessages", error.Description);
+                    }
+                }
+
+                if (deletionResult.Succeeded && addResult.Succeeded)
+                {
+                    return Ok();
+                }
+                return BadRequest(ModelState);
+            }
+
+            return BadRequest(ModelState);
+        }
 
         [HttpGet("removeUser")]
         public async Task<IActionResult> RemoveUser(string email)
