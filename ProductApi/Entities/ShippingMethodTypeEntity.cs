@@ -7,6 +7,7 @@ namespace ProductApi.Entities
 {
     public class ShippingMethodTypeEntity
     {
+        public int Id { get; set; }
         //Create an ENUM for shipping description and code
         //ShippingCost per item?
     }

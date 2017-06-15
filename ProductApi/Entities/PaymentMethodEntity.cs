@@ -7,5 +7,6 @@ namespace ProductApi.Entities
 {
     public class PaymentMethodEntity
     {
+        public int Id { get; set; }
     }
 }

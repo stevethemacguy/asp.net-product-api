@@ -9,6 +9,7 @@ namespace ProductApi.Entities
     public class OrderItemEntity
     {
         //Let EF create the ID
+        public int Id { get; set; }
 
         //Create a navigation property that points to a product. Required by EF
         public ProductEntity Product { get; set; }
