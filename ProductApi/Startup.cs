@@ -174,6 +174,18 @@ namespace ProductApi
                 cfg.CreateMap<Models.CartItem, Entities.CartItemEntity>();
                 cfg.CreateMap<Models.Product, Entities.ProductEntity>();
                 cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
+
+                //Shopping Cart Mappings
+                cfg.CreateMap<Entities.BillingAddressEntity, Models.BillingAddress>();
+                cfg.CreateMap<Entities.ShippingAddressEntity, Models.ShippingAddress>();
+                //cfg.CreateMap<Entities.ShoppingCartEntity, Models.ShoppingCart>();
+                //cfg.CreateMap<Entities.CartItemEntity, Models.CartItem>();
+
+                //Shopping Cart return Mappings
+                cfg.CreateMap<Models.BillingAddress, Entities.BillingAddressEntity>();
+                cfg.CreateMap<Models.ShippingAddress, Entities.ShippingAddressEntity>();
+                //cfg.CreateMap<Models.Product, Entities.ProductEntity>();
+                //cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
             });
 
             //Enable CORS
