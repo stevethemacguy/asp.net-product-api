@@ -12,6 +12,7 @@ using ProductApi.Services;
 
 namespace ProductApi.Controllers
 {
+    [Route("api/checkout")]
     public class CheckoutController : Controller
     {
 
@@ -27,8 +28,8 @@ namespace ProductApi.Controllers
         }
 
         //Creates a new Order (and order items) with the CartItems that match the logged in user, adds the order to the DB, and then removes the cartItems from the DB.
-        [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout([FromBody] BillingAddress billingAddress, ShippingAddress shippingAddress)
+        [HttpPost("createOrder")]
+        public async Task<IActionResult> CreateOrder([FromBody] AddressInformation addressInformation)
         {
             //Check for things like the Required or MaxLength Attributes, which can make the model state invalid
             if (!ModelState.IsValid)
@@ -43,6 +44,19 @@ namespace ProductApi.Controllers
             {
                 return NotFound();
             }
+
+            //Create a new Addresses object or something that takes botha  billing and shipping address from the API?
+
+            //Since we can only do the auto-convert from body with the address, do it with the shipping address and then see if we can use the same address for building
+            //if (shippingAddress.addressType = "Billing"
+            //Then use the incoming address DTO for both Billing and Shipping
+            
+            //If the addressType is shipping, then do something else.
+            //Address billingAddress;
+            //Address shippingAddress;
+
+            var shippingAddress = addressInformation.ShippingAddress;
+            var billingAddress = addressInformation.BillingAddress;
 
             //Map the shipping address object received in the request to an Entity
             var finalShippingAddress = AutoMapper.Mapper.Map<Entities.ShippingAddressEntity>(shippingAddress);
@@ -103,9 +117,9 @@ namespace ProductApi.Controllers
             };
 
             //Get the cart items that match the logged in User Id
-            var cartItemEntities = _productRepo.GetShoppingCartItems(user.Id);
+            var cartItemEntities = _productRepo.GetShoppingCartItems(user.Id).ToList();
 
-            if (cartItemEntities == null)
+            if (cartItemEntities == null || cartItemEntities.Any() == false)
             {
                 return BadRequest(ModelState);
             }

@@ -8,11 +8,15 @@ namespace ProductApi.Entities
 {
     public class OrderEntity
     {
+        //List of navigation properties to access each OrderItem
+        public List<OrderItemEntity> OrderItems { get; set; }
+
         //When and Order is first constructed, set it's Date Created and OrderStatus
         public OrderEntity()
         {
             DateCreated = DateTimeOffset.Now;
             OrderStatus = OrderStatus.Pending;
+            OrderItems = new List<OrderItemEntity>();
         }
 
         //Try with default EF Id, but I may want to define OrderId (instead of just ID)
@@ -21,9 +25,6 @@ namespace ProductApi.Entities
 
         //FK pointing to the User's ID. This is also the same as the "ShoppingCartId" in CartItem.
         public string UserId { get; set; }
-
-        //List of navigation properties to access each OrderItem
-        public List<OrderItemEntity> OrderItems { get; set; }
 
         //According to MS documentation, no Foreign Key should be needed on Order, since it is the parent entity.
 
