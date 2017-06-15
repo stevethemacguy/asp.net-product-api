@@ -51,7 +51,7 @@ namespace ProductApi.Services
 
         /////// ShoppingCartController Methods \\\\\\
 
-        public void CreateOrder(OrderEntity orderToAdd)
+        public void AddOrder(OrderEntity orderToAdd)
         {
             //check if the entity already exists in the DB.
             var entityExists = OrderExists(orderToAdd.Id);
@@ -69,7 +69,7 @@ namespace ProductApi.Services
             _context.Orders.Remove(orderToDelete);
         }
 
-        public void CreateShippingAddress(ShippingAddressEntity addressToAdd)
+        public void AddShippingAddress(ShippingAddressEntity addressToAdd)
         {
             //check if the entity already exists in the DB.
             var entityExists = ShippingAddressExists(addressToAdd.Id);
@@ -87,7 +87,7 @@ namespace ProductApi.Services
             _context.ShippingAddresses.Remove(addressToDelete);
         }
 
-        public void CreateBillingAddress(BillingAddressEntity addressToAdd)
+        public void AddBillingAddress(BillingAddressEntity addressToAdd)
         {
             //check if the entity already exists in the DB.
             var entityExists = BillingAddressExists(addressToAdd.Id);

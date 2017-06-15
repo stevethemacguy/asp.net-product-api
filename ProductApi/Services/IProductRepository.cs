@@ -61,17 +61,17 @@ namespace ProductApi.Services
 
         /////// Orders \\\\\
         bool OrderExists(int orderId);
-        void CreateOrder(OrderEntity orderToAdd);
+        void AddOrder(OrderEntity orderToAdd);
         void DeleteOrder(OrderEntity orderToDelete);
 
         /////// Shipping Address \\\\\
         bool ShippingAddressExists(int addressId);
-        void CreateShippingAddress(ShippingAddressEntity addressToAdd);
+        void AddShippingAddress(ShippingAddressEntity addressToAdd);
         void DeleteShippingAddress(ShippingAddressEntity addressToDelete);
 
         /////// Billing Address \\\\\
         bool BillingAddressExists(int addressId);
-        void CreateBillingAddress(BillingAddressEntity addressToAdd);
+        void AddBillingAddress(BillingAddressEntity addressToAdd);
         void DeleteBillingAddress(BillingAddressEntity addressToDelete);
 
         //Required to save new entities to the database context when they are created.
