@@ -19,6 +19,16 @@ namespace ProductApi.Entities
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<CartItemEntity> CartItems { get; set; }
 
+        public DbSet<OrderEntity> Orders { get; set; }
+        public DbSet<OrderItemEntity> OrderItems { get; set; }
+
+        public DbSet<ShippingAddressEntity> ShippingAddresses { get; set; }
+        public DbSet<BillingAddressEntity> BillingAddresses { get; set; }
+        
+        public DbSet<PaymentMethodEntity> PaymentMethods { get; set; }
+        public DbSet<ShippingMethodTypeEntity> ShippingTypes { get; set; }
+        
+
         //Note: ShoppingCarts are no longer used. CartItems use their shoppingCartId to track which cart should be used.
         //Todo: Remove and update the DB Scheme with a new migration.
         public DbSet<ShoppingCartEntity> ShoppingCarts { get; set; }

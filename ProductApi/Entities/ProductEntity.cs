@@ -13,5 +13,9 @@ namespace ProductApi.Entities
         [Required]
         public double Price { get; set; }
         public string ImageUrl { get; set; }
+
+        //A FK to the orderItem? MS documentation says this is needed since Product is a dependent
+        //public int OrderItemId { get; set; }
+        //public OrderItemId OrderItemId{ get; set; }
     }
 }

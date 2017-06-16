@@ -15,17 +15,16 @@ namespace ProductApi.Entities
         //The item's id
         public int Id { get; set; }
 
-        //Reference to the Shopping Cart that contains this item. CartItems do not exist without a cart!
+        //This is actually just the userID that purchased the item. No intermediate ShoppingCart object exists.
         public string ShoppingCartId { get; set; }
 
         //How many of this CartItem are in the Cart
         public int Quantity { get; set; }
 
-        //Create a foreign key (i.e. navigation property) that points to the related produc that this CartItem represents. 
+        //Create a navigation property that points to a product. Not sure if this is needed.
         public ProductEntity Product { get; set; }
-        public int ProductId { get; set; }
 
-        //Does it need a nav property to the cart? I don't know
-        //public ShoppingCart Cart { get; set; }
+        //Create a foreign key that points to the related product that this CartItem represents. 
+        public int ProductId { get; set; }
     }
 }

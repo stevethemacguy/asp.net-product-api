@@ -49,6 +49,94 @@ namespace ProductApi.Services
             _context.Products.Remove(productToDelete);
         }
 
+        /////// ShoppingCartController Methods \\\\\\
+
+        public void AddOrder(OrderEntity orderToAdd)
+        {
+            //check if the entity already exists in the DB.
+            var entityExists = OrderExists(orderToAdd.Id);
+
+            //If it doesn't, then add a new one to the DB
+            if (entityExists == false)
+            {
+                _context.Orders.Add(orderToAdd);
+
+            }
+        }
+
+        public void DeleteOrder(OrderEntity orderToDelete)
+        {
+            _context.Orders.Remove(orderToDelete);
+        }
+
+        public void AddShippingAddress(ShippingAddressEntity addressToAdd)
+        {
+            //check if the entity already exists in the DB.
+            var entityExists = ShippingAddressExists(addressToAdd.Id);
+
+            //If it doesn't, then add a new one to the DB
+            if (entityExists == false)
+            {
+                //Use the mapper here?
+                _context.ShippingAddresses.Add(addressToAdd);
+            }
+        }
+
+        public void DeleteShippingAddress(ShippingAddressEntity addressToDelete)
+        {
+            _context.ShippingAddresses.Remove(addressToDelete);
+        }
+
+        public void AddBillingAddress(BillingAddressEntity addressToAdd)
+        {
+            //check if the entity already exists in the DB.
+            var entityExists = BillingAddressExists(addressToAdd.Id);
+
+            //If it doesn't exists, then add a new one to the DB
+            if (entityExists == false)
+            {
+                _context.BillingAddresses.Add(addressToAdd);
+            }
+        }
+
+        public void DeleteBillingAddress(BillingAddressEntity addressToDelete)
+        {
+            _context.BillingAddresses.Remove(addressToDelete);
+        }
+
+        public bool ShippingAddressExists(int addressId)
+        {
+            var existingItem = _context.ShippingAddresses.FirstOrDefault(i => i.Id == addressId);
+            if (existingItem == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool BillingAddressExists(int addressId)
+        {
+            var existingItem = _context.BillingAddresses.FirstOrDefault(i => i.Id == addressId);
+            if (existingItem == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool OrderExists(int orderId)
+        {
+            var existingItem = _context.Orders.FirstOrDefault(i => i.Id == orderId);
+            if (existingItem == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        //\\\\ End ShoppingCartController Methods ///////
+
+
         /////// Cart Item Methods \\\\\\\
         //To be called when adding an item to a cart        
         public void CreateCartItem(CartItemEntity itemToAdd)

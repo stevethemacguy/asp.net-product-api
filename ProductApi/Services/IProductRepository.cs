@@ -58,6 +58,22 @@ namespace ProductApi.Services
         //Delete a CartItem (i.e. this effectively "removes" and item from a shopping cart
         void DeleteCartItem(CartItemEntity itemToDelete);
 
+
+        /////// Orders \\\\\
+        bool OrderExists(int orderId);
+        void AddOrder(OrderEntity orderToAdd);
+        void DeleteOrder(OrderEntity orderToDelete);
+
+        /////// Shipping Address \\\\\
+        bool ShippingAddressExists(int addressId);
+        void AddShippingAddress(ShippingAddressEntity addressToAdd);
+        void DeleteShippingAddress(ShippingAddressEntity addressToDelete);
+
+        /////// Billing Address \\\\\
+        bool BillingAddressExists(int addressId);
+        void AddBillingAddress(BillingAddressEntity addressToAdd);
+        void DeleteBillingAddress(BillingAddressEntity addressToDelete);
+
         //Required to save new entities to the database context when they are created.
         bool Save();
 
