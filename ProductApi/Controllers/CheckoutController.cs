@@ -45,16 +45,6 @@ namespace ProductApi.Controllers
                 return NotFound();
             }
 
-            //Create a new Addresses object or something that takes botha  billing and shipping address from the API?
-
-            //Since we can only do the auto-convert from body with the address, do it with the shipping address and then see if we can use the same address for building
-            //if (shippingAddress.addressType = "Billing"
-            //Then use the incoming address DTO for both Billing and Shipping
-            
-            //If the addressType is shipping, then do something else.
-            //Address billingAddress;
-            //Address shippingAddress;
-
             var shippingAddress = addressInformation.ShippingAddress;
             var billingAddress = addressInformation.BillingAddress;
 
@@ -70,19 +60,6 @@ namespace ProductApi.Controllers
                 //Add the user id to the entity
                 finalShippingAddress.UserId = user.Id;
                 _productRepo.AddShippingAddress(finalShippingAddress);
-
-                //var address = new ShippingAddress()
-                //{
-                //    UserId = user.Id,
-                //    AddressLine1 = shippingAddress.AddressLine1,
-                //    AddressLine2 = shippingAddress.AddressLine2,
-                //    FirstName = shippingAddress.FirstName,
-                //    LastName = shippingAddress.LastName,
-                //    MiddleInitial = shippingAddress.LastName,
-                //    Country = shippingAddress.Country,
-                //    State = shippingAddress.State,
-                //    ZipCode = shippingAddress.ZipCode
-                //};
             }
 
             //Map the billing address object received in the request to an Entity
@@ -169,7 +146,6 @@ namespace ProductApi.Controllers
 
             //Add the new order to the repo
             _productRepo.AddOrder(order);
-
 
             //Save all changes to the repo
             if (!_productRepo.Save())
