@@ -276,6 +276,12 @@ namespace ProductApi.Services
             }
         }
 
+        public PaymentMethodEntity GetPaymentMethod(int paymentMethodId)
+        {
+            return _context.PaymentMethods
+                .FirstOrDefault(i => i.Id == paymentMethodId);
+        }
+
         public void DeletePaymentMethod(PaymentMethodEntity paymentMethodToDelete)
         {
             _context.PaymentMethods.Remove(paymentMethodToDelete);
@@ -283,12 +289,13 @@ namespace ProductApi.Services
 
         public IEnumerable<PaymentMethodEntity> GetPaymentMethods(string userId)
         {
-            return _context.PaymentMethods.OrderBy(p => p.CustomCardName).ToList();
-        }
+            var paymentMethods = _context.PaymentMethods;
+            if (!paymentMethods.Any())
+            {
+                return null;
+            }
 
-        public PaymentMethodEntity GetPaymentMethod(int paymentMethodId)
-        {
-            return _context.PaymentMethods.FirstOrDefault(p => p.Id == paymentMethodId);
+            return _context.PaymentMethods.Where(i => i.UserId == userId).ToList();
         }
 
         /////// Database Methods \\\\\\\\

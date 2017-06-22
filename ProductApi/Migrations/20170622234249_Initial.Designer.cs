@@ -9,8 +9,8 @@ using ProductApi.Models;
 namespace ProductApi.Migrations
 {
     [DbContext(typeof(ProductApiContext))]
-    [Migration("20170622185619_Changed-Security-Code-Type-to-Int")]
-    partial class ChangedSecurityCodeTypetoInt
+    [Migration("20170622234249_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -266,8 +266,6 @@ namespace ProductApi.Migrations
 
                     b.Property<string>("IsValid");
 
-                    b.Property<int?>("PaymentMethodId");
-
                     b.Property<int>("SecurityCode");
 
                     b.Property<string>("UserId");
@@ -275,8 +273,6 @@ namespace ProductApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BillingAddressId");
-
-                    b.HasIndex("PaymentMethodId");
 
                     b.ToTable("PaymentMethods");
                 });
@@ -397,6 +393,36 @@ namespace ProductApi.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("ProductApi.Models.BillingAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AddressLine1");
+
+                    b.Property<string>("AddressLine2");
+
+                    b.Property<string>("Country");
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
+                    b.Property<string>("MiddleInitial");
+
+                    b.Property<string>("Phone");
+
+                    b.Property<string>("State");
+
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("ZipCode");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BillingAddress");
+                });
+
             modelBuilder.Entity("ProductApi.Models.PaymentMethod", b =>
                 {
                     b.Property<int>("Id")
@@ -410,7 +436,7 @@ namespace ProductApi.Migrations
 
                     b.Property<string>("CustomCardName");
 
-                    b.Property<DateTimeOffset>("ExpirationDate");
+                    b.Property<string>("ExpirationDate");
 
                     b.Property<string>("IsValid");
 
@@ -509,15 +535,11 @@ namespace ProductApi.Migrations
                     b.HasOne("ProductApi.Entities.BillingAddressEntity", "BillingAddress")
                         .WithMany()
                         .HasForeignKey("BillingAddressId");
-
-                    b.HasOne("ProductApi.Models.PaymentMethod", "PaymentMethod")
-                        .WithMany()
-                        .HasForeignKey("PaymentMethodId");
                 });
 
             modelBuilder.Entity("ProductApi.Models.PaymentMethod", b =>
                 {
-                    b.HasOne("ProductApi.Entities.BillingAddressEntity", "BillingAddress")
+                    b.HasOne("ProductApi.Models.BillingAddress", "BillingAddress")
                         .WithMany()
                         .HasForeignKey("BillingAddressId");
                 });

@@ -75,12 +75,12 @@ namespace ProductApi.Services
 
         /////// Payment Methods \\\\\
         bool PaymentMethodExists(int paymentMethodId);
+        PaymentMethodEntity GetPaymentMethod(int paymentMethodId);
         void AddPaymentMethod(PaymentMethodEntity paymentMethodToAdd);
         void DeletePaymentMethod(PaymentMethodEntity paymentMethodToDelete);
 
         //Get all payment methods associated with the logged in user
         IEnumerable<PaymentMethodEntity> GetPaymentMethods(string userId);
-        PaymentMethodEntity GetPaymentMethod(int paymentMethodId);
 
         ////// End Payment Methods //////
 

@@ -3,6 +3,7 @@
     public class BillingAddress
     {
         //Use the default EF Id. Don't need to specify
+        public int Id { get; set; }
 
         //FK pointing to the User. This shouldn't be required, but we may need it later
         public string UserId { get; set; }

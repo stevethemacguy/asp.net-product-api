@@ -125,7 +125,7 @@ namespace ProductApi.Controllers
         }
 
         [HttpDelete("{paymentMethodId}")]
-        public IActionResult DeleteProduct(int paymentMethodId)
+        public IActionResult DeletePaymentMethod(int paymentMethodId)
         {
             //See if the payment method exists in the repor
             var exists = _productRepo.PaymentMethodExists(paymentMethodId);

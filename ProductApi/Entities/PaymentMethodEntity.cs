@@ -30,14 +30,6 @@ namespace ProductApi.Entities
         //This should be encrypted.
         public int SecurityCode { get; set; }
 
-        [Required]
         public DateTimeOffset ExpirationDate { get; set; }
-
-        //Foreign key to reference list of Orders?
-        //public int OrderId { get; set; }
-
-        //Navigation property to allow access to this PaymentMethod from an Order.
-        public PaymentMethod PaymentMethod{ get; set; }
-
     }
 }

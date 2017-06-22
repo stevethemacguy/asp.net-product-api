@@ -8,10 +8,7 @@ namespace ProductApi.Models
         public int Id { get; set; }
 
         //Billing adddress associated with this PM
-        public BillingAddressEntity BillingAddress { get; set; }
-
-        //FK pointing to the User's ID. This can be null if a payment method is used during checkout but not saved.
-        ///public string UserId { get; set; }
+        public BillingAddress BillingAddress { get; set; }
 
         //Not sure if this should be saved
         public int CardNumber { get; set; }
