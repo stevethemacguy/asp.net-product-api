@@ -58,7 +58,6 @@ namespace ProductApi.Services
         //Delete a CartItem (i.e. this effectively "removes" and item from a shopping cart
         void DeleteCartItem(CartItemEntity itemToDelete);
 
-
         /////// Orders \\\\\
         bool OrderExists(int orderId);
         void AddOrder(OrderEntity orderToAdd);
@@ -74,8 +73,17 @@ namespace ProductApi.Services
         void AddBillingAddress(BillingAddressEntity addressToAdd);
         void DeleteBillingAddress(BillingAddressEntity addressToDelete);
 
-        //Required to save new entities to the database context when they are created.
-        bool Save();
+        /////// Payment Methods \\\\\
+        bool PaymentMethodExists(int paymentMethodId);
+        void AddPaymentMethod(PaymentMethodEntity paymentMethodToAdd);
+        void DeletePaymentMethod(PaymentMethodEntity paymentMethodToDelete);
 
+        //Get all payment methods associated with the logged in user
+        IEnumerable<PaymentMethodEntity> GetPaymentMethods(string userId);
+        
+        ////// End Payment Methods //////
+
+            //Required to save new entities to the database context when they are created.
+        bool Save();
     }
 }

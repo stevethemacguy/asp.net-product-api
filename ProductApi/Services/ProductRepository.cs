@@ -258,8 +258,36 @@ namespace ProductApi.Services
         //    shoppingCart.CartItems.Remove(itemToDelete);
         //}
 
+        //////Payment Methods\\\\\\
+        public bool PaymentMethodExists(int paymentMethodId)
+        {
+            return _context.PaymentMethods.Any(p => p.Id == paymentMethodId);
+        }
+
+        public void AddPaymentMethod(PaymentMethodEntity paymentMethodToAdd)
+        {
+            //check if the cartItem already exists in the DB.
+            var paymentExists = PaymentMethodExists(paymentMethodToAdd.Id);
+
+            //If it doesn't, then add a new one to the DB
+            if (paymentExists == false)
+            {
+                _context.PaymentMethods.Add(paymentMethodToAdd);
+            }
+        }
+
+        public void DeletePaymentMethod(PaymentMethodEntity paymentMethodToDelete)
+        {
+            _context.PaymentMethods.Remove(paymentMethodToDelete);
+        }
+
+        public IEnumerable<PaymentMethodEntity> GetPaymentMethods(string userId)
+        {
+            return _context.PaymentMethods.OrderBy(p => p.CustomCardName).ToList();
+        }
+
         /////// Database Methods \\\\\\\\
-        
+
         //Used to persist changes in the SQL DB (i.e. when you create or delete something from the DB, you must call save on the DB context).
         public bool Save()
         {

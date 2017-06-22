@@ -186,6 +186,10 @@ namespace ProductApi
                 cfg.CreateMap<Models.ShippingAddress, Entities.ShippingAddressEntity>();
                 //cfg.CreateMap<Models.Product, Entities.ProductEntity>();
                 //cfg.CreateMap<Models.ProductForCreation, Entities.ProductEntity>();
+
+                //Payment Method mappings
+                cfg.CreateMap<Entities.PaymentMethodEntity, Models.PaymentMethod>();
+                cfg.CreateMap<Models.PaymentMethod, Entities.PaymentMethodEntity>();
             });
 
             //Enable CORS

@@ -9,9 +9,10 @@ using ProductApi.Models;
 namespace ProductApi.Migrations
 {
     [DbContext(typeof(ProductApiContext))]
-    partial class ProductApiContextModelSnapshot : ModelSnapshot
+    [Migration("20170622183230_Added-payment-methods")]
+    partial class Addedpaymentmethods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -413,7 +414,7 @@ namespace ProductApi.Migrations
 
                     b.Property<string>("IsValid");
 
-                    b.Property<int>("SecurityCode");
+                    b.Property<string>("SecurityCode");
 
                     b.HasKey("Id");
 

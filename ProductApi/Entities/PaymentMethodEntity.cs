@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using ProductApi.Models;
 
 namespace ProductApi.Entities
@@ -27,15 +28,16 @@ namespace ProductApi.Entities
         public string IsValid { get; set; }
 
         //This should be encrypted.
-        public string SecurityCode { get; set; }
+        public int SecurityCode { get; set; }
 
+        [Required]
         public DateTimeOffset ExpirationDate { get; set; }
 
         //Foreign key to reference list of Orders?
         //public int OrderId { get; set; }
 
         //Navigation property to allow access to this PaymentMethod from an Order.
-        public PaymentMethodEntity PaymentMethod{ get; set; }
+        public PaymentMethod PaymentMethod{ get; set; }
 
     }
 }

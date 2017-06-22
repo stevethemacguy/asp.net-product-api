@@ -5,6 +5,8 @@ namespace ProductApi.Models
 {
     public class PaymentMethod
     {
+        public int Id { get; set; }
+
         //Billing adddress associated with this PM
         public BillingAddressEntity BillingAddress { get; set; }
 
@@ -24,8 +26,8 @@ namespace ProductApi.Models
         public string IsValid { get; set; }
 
         //This should be encrypted.
-        public string SecurityCode { get; set; }
+        public int SecurityCode { get; set; }
 
-        public DateTimeOffset ExpirationDate { get; set; }
+        public string ExpirationDate { get; set; }
     }
 }
