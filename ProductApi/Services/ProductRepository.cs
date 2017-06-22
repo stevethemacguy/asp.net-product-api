@@ -286,6 +286,11 @@ namespace ProductApi.Services
             return _context.PaymentMethods.OrderBy(p => p.CustomCardName).ToList();
         }
 
+        public PaymentMethodEntity GetPaymentMethod(int paymentMethodId)
+        {
+            return _context.PaymentMethods.FirstOrDefault(p => p.Id == paymentMethodId);
+        }
+
         /////// Database Methods \\\\\\\\
 
         //Used to persist changes in the SQL DB (i.e. when you create or delete something from the DB, you must call save on the DB context).

@@ -80,10 +80,12 @@ namespace ProductApi.Services
 
         //Get all payment methods associated with the logged in user
         IEnumerable<PaymentMethodEntity> GetPaymentMethods(string userId);
-        
+        PaymentMethodEntity GetPaymentMethod(int paymentMethodId);
+
         ////// End Payment Methods //////
 
-            //Required to save new entities to the database context when they are created.
+        //Required to save new entities to the database context when they are created.
         bool Save();
+        
     }
 }

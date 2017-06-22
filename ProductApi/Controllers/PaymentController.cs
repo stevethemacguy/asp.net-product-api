@@ -123,5 +123,37 @@ namespace ProductApi.Controllers
 
             return Ok(allPaymentMethods);
         }
+
+        [HttpDelete("{paymentMethodId}")]
+        public IActionResult DeleteProduct(int paymentMethodId)
+        {
+            //See if the payment method exists in the repor
+            var exists = _productRepo.PaymentMethodExists(paymentMethodId);
+
+            if (exists == false)
+            {
+                return NotFound();
+            }
+
+            //Get the POI entity that's in the DB, so we can delete it.
+            var toDeleteEntity = _productRepo.GetPaymentMethod(paymentMethodId);
+
+            if (toDeleteEntity == null)
+            {
+                return NotFound();
+            }
+
+            //Remove the payment method
+            _productRepo.DeletePaymentMethod(toDeleteEntity);
+
+            //Since we just removed an entity form the DB, save changes on the repo to ensure the change persists.
+            if (!_productRepo.Save())
+            {
+                _logger.LogInformation("The attempt to delete a Product from the database FAILED.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
+
+            return NoContent();
+        }
     }
 }
