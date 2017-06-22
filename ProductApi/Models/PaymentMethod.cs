@@ -1,18 +1,15 @@
 ﻿using System;
-using ProductApi.Models;
+using ProductApi.Entities;
 
-namespace ProductApi.Entities
+namespace ProductApi.Models
 {
-    public class PaymentMethodEntity
+    public class PaymentMethod
     {
-        //Uniquely identifies this credit card
-        public int Id { get; set; }
-
         //Billing adddress associated with this PM
         public BillingAddressEntity BillingAddress { get; set; }
 
         //FK pointing to the User's ID. This can be null if a payment method is used during checkout but not saved.
-        public string UserId { get; set; }
+        ///public string UserId { get; set; }
 
         //Not sure if this should be saved
         public int CardNumber { get; set; }
@@ -30,12 +27,5 @@ namespace ProductApi.Entities
         public string SecurityCode { get; set; }
 
         public DateTimeOffset ExpirationDate { get; set; }
-
-        //Foreign key to reference list of Orders?
-        //public int OrderId { get; set; }
-
-        //Navigation property to allow access to this PaymentMethod from an Order.
-        public PaymentMethodEntity PaymentMethod{ get; set; }
-
     }
 }

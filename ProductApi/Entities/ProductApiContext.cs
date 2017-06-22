@@ -25,7 +25,7 @@ namespace ProductApi.Entities
         public DbSet<ShippingAddressEntity> ShippingAddresses { get; set; }
         public DbSet<BillingAddressEntity> BillingAddresses { get; set; }
         
-        public DbSet<PaymentMethodEntity> PaymentMethods { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<ShippingMethodTypeEntity> ShippingTypes { get; set; }
         
 
