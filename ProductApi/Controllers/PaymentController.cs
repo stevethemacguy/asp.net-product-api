@@ -111,7 +111,7 @@ namespace ProductApi.Controllers
                 return StatusCode(500, "A problem occured while handling your request");
             }
 
-            return NoContent();
+            return Ok(pm.Id);
         }
 
         [HttpGet("getPaymentMethods")]
