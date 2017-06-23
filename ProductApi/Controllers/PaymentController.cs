@@ -66,7 +66,6 @@ namespace ProductApi.Controllers
                 return BadRequest(ModelState);
             }
 
-
             //Get the billing address from the Post body
             var billingAddress = paymentMethod.BillingAddress;
 

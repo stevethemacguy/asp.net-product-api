@@ -31,7 +31,7 @@ namespace ProductApi.Entities
         //Simple Relationships, so I only need to specify navigation propertys on the parent (i.e. this OrderEntity)
         public ShippingAddressEntity ShippingAddress { get; set; }
         public BillingAddressEntity BillingAddress { get; set; }
-        public PaymentMethod PaymentMethodUsed { get; set; }
+        public PaymentMethodEntity PaymentMethodUsed { get; set; }
         public ShippingMethodTypeEntity ShippingMethodType { get; set; }
 
         public DateTimeOffset DateCreated { get; set; }

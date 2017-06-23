@@ -15,6 +15,6 @@ namespace ProductApi.Models
 
         public ShippingAddress ShippingAddress { get; set; }
         public BillingAddress BillingAddress { get; set; }
-
+        public int PaymentMethodId { get; set; }
     }
 }

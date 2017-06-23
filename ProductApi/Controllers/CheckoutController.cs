@@ -47,6 +47,7 @@ namespace ProductApi.Controllers
 
             var shippingAddress = addressInformation.ShippingAddress;
             var billingAddress = addressInformation.BillingAddress;
+            var paymentMethodId = addressInformation.PaymentMethodId;
 
             //Map the shipping address object received in the request to an Entity
             var finalShippingAddress = AutoMapper.Mapper.Map<Entities.ShippingAddressEntity>(shippingAddress);
@@ -76,7 +77,13 @@ namespace ProductApi.Controllers
                 _productRepo.AddBillingAddress(finalBillingAddress);
             }
 
-            //Todo: Create a new Payment or use an existing one
+            //Check for a valid payment method
+            var paymentMethodUsed = _productRepo.GetPaymentMethod(paymentMethodId);
+
+            if (paymentMethodUsed == null)
+            {
+                return BadRequest(ModelState);
+            }
 
             //Create the Order (OrderItems and prices will be added/calculated later). 
             var order = new OrderEntity()
@@ -85,7 +92,7 @@ namespace ProductApi.Controllers
                 BillingAddress = finalBillingAddress,
                 ShippingAddress = finalShippingAddress,
                 DateUpdated = null,                     //Future enhancement
-                PaymentMethodUsed = null,               //Future enhancement
+                PaymentMethodUsed = paymentMethodUsed,  
                 ShippingMethodType = null,              //Future enhancement
                 SalesTaxRate = new decimal(0.0),        //Future enhancement
                 TotalShippingCost = new decimal(0.0),   //Future enhancement
