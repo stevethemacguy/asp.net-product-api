@@ -63,19 +63,19 @@ namespace ProductApi.Controllers
                 _productRepo.AddShippingAddress(finalShippingAddress);
             }
 
-            //Map the billing address object received in the request to an Entity
-            var finalBillingAddress = AutoMapper.Mapper.Map<Entities.BillingAddressEntity>(billingAddress);
+            ////Map the billing address object received in the request to an Entity
+            //var finalBillingAddress = AutoMapper.Mapper.Map<Entities.BillingAddressEntity>(billingAddress);
 
-            //See if the villingAddress passed in already exists in the database
-            var billingAddressExists = _productRepo.BillingAddressExists(finalBillingAddress.Id);
+            ////See if the villingAddress passed in already exists in the database
+            //var billingAddressExists = _productRepo.BillingAddressExists(finalBillingAddress.Id);
 
-            //If the billingAddress doesn't yet exist, create it, otherwise use the existing address
-            if (!billingAddressExists)
-            {
-                //Add the user id to the entity
-                finalBillingAddress.UserId = user.Id;
-                _productRepo.AddBillingAddress(finalBillingAddress);
-            }
+            ////If the billingAddress doesn't yet exist, create it, otherwise use the existing address
+            //if (!billingAddressExists)
+            //{
+            //    //Add the user id to the entity
+            //    finalBillingAddress.UserId = user.Id;
+            //    _productRepo.AddBillingAddress(finalBillingAddress);
+            //}
 
             //Check for a valid payment method
             var paymentMethodUsed = _productRepo.GetPaymentMethod(paymentMethodId);
@@ -89,7 +89,7 @@ namespace ProductApi.Controllers
             var order = new OrderEntity()
             {
                 UserId = user.Id,   
-                BillingAddress = finalBillingAddress,
+                BillingAddress = paymentMethodUsed.BillingAddress,
                 ShippingAddress = finalShippingAddress,
                 DateUpdated = null,                     //Future enhancement
                 PaymentMethodUsed = paymentMethodUsed,  

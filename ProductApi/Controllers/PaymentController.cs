@@ -58,12 +58,18 @@ namespace ProductApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existingPayment = _productRepo.GetPaymentMethods(user.Id).FirstOrDefault(p => p.CardNumber == paymentMethod.CardNumber);
+            var userHasPaymentMethods = _productRepo.GetPaymentMethods(user.Id);
 
-            //Duplicate Card number
-            if (existingPayment != null)
+            //If there are any payment methods, check for duplicate credit card numbers.
+            if (userHasPaymentMethods != null)
             {
-                return BadRequest(ModelState);
+                var existingPayment = _productRepo.GetPaymentMethods(user.Id).FirstOrDefault(p => p.CardNumber == paymentMethod.CardNumber);
+
+                //Duplicate Card number
+                if (existingPayment != null)
+                {
+                    return BadRequest(ModelState);
+                }
             }
 
             //Get the billing address from the Post body

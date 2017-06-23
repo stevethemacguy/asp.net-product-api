@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ProductApi.Entities;
 
 namespace ProductApi.Services
@@ -278,7 +279,7 @@ namespace ProductApi.Services
 
         public PaymentMethodEntity GetPaymentMethod(int paymentMethodId)
         {
-            return _context.PaymentMethods
+            return _context.PaymentMethods.Include(i => i.BillingAddress)
                 .FirstOrDefault(i => i.Id == paymentMethodId);
         }
 
@@ -295,7 +296,8 @@ namespace ProductApi.Services
                 return null;
             }
 
-            return _context.PaymentMethods.Where(i => i.UserId == userId).ToList();
+            var allPaymentMethods = _context.PaymentMethods.Where(i => i.UserId == userId).Include(i => i.BillingAddress).ToList();
+            return allPaymentMethods;
         }
 
         /////// Database Methods \\\\\\\\
