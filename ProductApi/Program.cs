@@ -14,8 +14,8 @@ namespace ProductApi
                 //Optional. Use this VM's IP instead of localhost. Use this to connect to the API from your mac:
                 //For example: 192.168.173.201:5000/api/products. Also, when debugging, you should select ProductApi instead of IISExpress.
                 //WARNING: UseIISIntegration() will override UseUrls. If you want to test on your mac, you must comment out the UseIISIntegration Line!
-                .UseUrls("http://192.168.173.218:5000/")  
-                //.UseIISIntegration()
+                //.UseUrls("http://192.168.173.218:5000/")  
+                .UseIISIntegration()
                 .UseStartup<Startup>()
                 .CaptureStartupErrors(true)
                 .UseApplicationInsights()
