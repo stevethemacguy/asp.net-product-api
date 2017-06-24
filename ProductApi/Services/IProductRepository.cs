@@ -72,6 +72,7 @@ namespace ProductApi.Services
         bool BillingAddressExists(int addressId);
         void AddBillingAddress(BillingAddressEntity addressToAdd);
         void DeleteBillingAddress(BillingAddressEntity addressToDelete);
+        IEnumerable<BillingAddressEntity> GetBillingAddresses(string userId);
 
         /////// Payment Methods \\\\\
         bool PaymentMethodExists(int paymentMethodId);

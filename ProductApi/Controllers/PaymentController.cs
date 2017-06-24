@@ -78,16 +78,26 @@ namespace ProductApi.Controllers
             //Convert the billing address into an entity
             var billingAddressEntity  = AutoMapper.Mapper.Map<Entities.BillingAddressEntity>(billingAddress);
 
-            //See if the billingAddress passed in already exists in the database
-            var billingAddressExists = _productRepo.BillingAddressExists(billingAddressEntity.Id);
+            //Look for existing billing addresses
+            var existingBillingAddresses = _productRepo.GetBillingAddresses(user.Id);
 
-            //If the billingAddress doesn't yet exist, create it, otherwise use the existing address
-            if (!billingAddressExists)
+            //Check for duplicate billing addresses
+            if (existingBillingAddresses != null)
             {
-                //Add the user id to the entity
-                billingAddressEntity.UserId = user.Id;
-                _productRepo.AddBillingAddress(billingAddressEntity);
+                billingAddressEntity = _productRepo.GetBillingAddresses(user.Id).FirstOrDefault(p => p.AddressLine1 == billingAddress.AddressLine1);
+
+                //If it's a new address, then create it, otherwise just use the existing address
+                if (billingAddressEntity == null)
+                {
+                    billingAddressEntity = AutoMapper.Mapper.Map<Entities.BillingAddressEntity>(billingAddress);
+                    //Add the user id to the entity
+                    billingAddressEntity.UserId = user.Id;
+                    _productRepo.AddBillingAddress(billingAddressEntity);
+                }
             }
+
+            //Add the user Id
+            billingAddressEntity.UserId = user.Id;
 
             //Create the payment method
             var pm = new PaymentMethodEntity()

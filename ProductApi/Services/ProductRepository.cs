@@ -100,6 +100,18 @@ namespace ProductApi.Services
             }
         }
 
+        public IEnumerable<BillingAddressEntity> GetBillingAddresses(string userId)
+        {
+            var addresses = _context.BillingAddresses;
+            if (!addresses.Any())
+            {
+                return null;
+            }
+
+            var allAddresses = _context.BillingAddresses.Where(i => i.UserId == userId).ToList();
+            return allAddresses;
+        }
+
         public void DeleteBillingAddress(BillingAddressEntity addressToDelete)
         {
             _context.BillingAddresses.Remove(addressToDelete);
