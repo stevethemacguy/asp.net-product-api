@@ -85,6 +85,10 @@ namespace ProductApi.Services
 
         ////// End Payment Methods //////
 
+        ////// Reporting //////
+        IEnumerable<OrderEntity> GetAllOrders();
+        IEnumerable<OrderEntity> GetUsersOrders(string userId);
+
         //Required to save new entities to the database context when they are created.
         bool Save();
         

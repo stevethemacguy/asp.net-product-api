@@ -321,5 +321,38 @@ namespace ProductApi.Services
             //In this case, we'll just return true if at least one entity was updated/removed.
             return (_context.SaveChanges() >= 0);
         }
+
+        public IEnumerable<OrderEntity> GetAllOrders()
+        {
+            var orders = _context.Orders;
+            if (!orders.Any())
+            {
+                return null;
+            }
+
+            var allOrders = _context.Orders
+                .Include(o => o.OrderItems)
+                .Include(o => o.PaymentMethodUsed)
+                .OrderBy(d => d.DateCreated).ToList();
+
+            return allOrders;
+        }
+
+        public IEnumerable<OrderEntity> GetUsersOrders(string userId)
+        {
+            var orders = _context.Orders;
+            if (!orders.Any())
+            {
+                return null;
+            }
+
+            var allOrders = _context.Orders
+                .Where(i => i.UserId == userId)
+                .Include(o => o.OrderItems)
+                .Include(o => o.PaymentMethodUsed)
+                .OrderBy(d => d.DateCreated).ToList();
+
+            return allOrders;
+        }
     }
 }
