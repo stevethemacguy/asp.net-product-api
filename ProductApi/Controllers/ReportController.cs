@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ProductApi.Entities;
 using ProductApi.Models;
@@ -103,11 +98,12 @@ namespace ProductApi.Controllers
                 AverageDiscountAmount = new decimal(0.0),   //Future enhancement
                 AverageNumberOfItemsPurchased = 0.0,        //Future enhancement
                 MostPopularProduct = GetMostPopularProduct(),
-                MostPopularProducts = new List<ProductEntity>(), //Future enhancement
                 MostPopularProductInLastMonth = GetMostPopularProductInLastMonth(),
-                MostPopularProductsInLastMonth = new List<ProductEntity>(), //Future enhancement
                 MostPopularProductInLastDays = GetMostPopularProductInLastDays(7), //Last Week by Default. Future functionality may allow the user to specify the number when generating the report.
-                MostPopularProductsInLastDays = new List<ProductEntity>() //Future enhancement
+                //For some reason, creating a list of products here adds random columns to the ProductEntity in SQL, so I'm not using these for now
+                //MostPopularProducts = new List<ProductEntity>(), //Future enhancement
+                //MostPopularProductsInLastMonth = new List<ProductEntity>(), //Future enhancement
+                //MostPopularProductsInLastDays = new List<ProductEntity>() //Future enhancement
             };
 
             //Add the new report to the repo
@@ -181,8 +177,6 @@ namespace ProductApi.Controllers
                 }
             }
 
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
             return orderResult;
         }
 

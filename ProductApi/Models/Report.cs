@@ -51,12 +51,12 @@ namespace ProductApi.Models
         public Double AverageNumberOfItemsPurchased { get; set; }
 
         public Product MostPopularProduct { get; set; }
-        public List<Product> MostPopularProducts { get; set; }
+        //public List<Product> MostPopularProducts { get; set; }
 
         public Product MostPopularProductInLastMonth { get; set; }
-        public List<Product> MostPopularProductsInLastMonth { get; set; }
+        //public List<Product> MostPopularProductsInLastMonth { get; set; }
 
         public Product MostPopularProductInLastDays { get; set; }
-        public List<Product> MostPopularProductsInLastDays { get; set; }
+        //public List<Product> MostPopularProductsInLastDays { get; set; }
     }
 }

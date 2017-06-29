@@ -61,7 +61,6 @@ namespace ProductApi.Services
             if (entityExists == false)
             {
                 _context.Orders.Add(orderToAdd);
-
             }
         }
 
@@ -374,7 +373,7 @@ namespace ProductApi.Services
                 return null;
             }
 
-            var allItems = _context.OrderItems.Include(p => p.Product);
+            var allItems = _context.OrderItems.Include(p => p.Product).ToList();
 
             return allItems;
         }
@@ -391,7 +390,7 @@ namespace ProductApi.Services
 
             var allItems = _context.OrderItems
                 .Include(p => p.Product)
-                .Include(o => o.Order);
+                .Include(o => o.Order).ToList();
 
             return allItems;
         }
@@ -416,9 +415,9 @@ namespace ProductApi.Services
                 .Include(r => r.MostPopularProduct)
                 .Include(r => r.MostPopularProductInLastDays)
                 .Include(r => r.MostPopularProductInLastMonth)
-                .Include(r => r.MostPopularProducts)
-                .Include(r => r.MostPopularProductsInLastDays)
-                .Include(r => r.MostPopularProductsInLastMonth)
+                //.Include(r => r.MostPopularProducts)
+                //.Include(r => r.MostPopularProductsInLastDays)
+                //.Include(r => r.MostPopularProductsInLastMonth)
                 .FirstOrDefault(r => r.Id == reportId);
         }
 
@@ -428,9 +427,9 @@ namespace ProductApi.Services
                 .Include(r => r.MostPopularProduct)
                 .Include(r => r.MostPopularProductInLastDays)
                 .Include(r => r.MostPopularProductInLastMonth)
-                .Include(r => r.MostPopularProducts)
-                .Include(r => r.MostPopularProductsInLastDays)
-                .Include(r => r.MostPopularProductsInLastMonth)
+                //.Include(r => r.MostPopularProducts)
+                //.Include(r => r.MostPopularProductsInLastDays)
+                //.Include(r => r.MostPopularProductsInLastMonth)
                 .OrderBy(r => r.ReportGeneratedDate).ToList();
         }
     }

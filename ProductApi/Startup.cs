@@ -5,14 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using ProductApi.Services;
 using Microsoft.Extensions.Configuration;
 using ProductApi.Entities;
-using ProductApi.Models;
 
 namespace ProductApi
 {
@@ -132,7 +130,7 @@ namespace ProductApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ProductApiContext productApiContext)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ProductApiContext productApiContext)
         {
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
@@ -156,9 +154,6 @@ namespace ProductApi
             //Add cookie-based authentication. This must come BEFORE use MVC! When use Identity is enabled,
             //this will return 302 redirects instead of a 401: Unauthorized
             app.UseIdentity();
-
-            //Seed the database with data. You may want to seed data directly with SQL commands instead (e.g. with a PowerShell script).
-            productApiContext.EnsureSeedDataForContext();
 
             //Create mappings from the application's DTOs to their respective entity classes returned from Sql.
             AutoMapper.Mapper.Initialize(cfg =>
@@ -229,7 +224,10 @@ namespace ProductApi
             //app.UseStatusCodePages();
             app.UseMvc();
 
-           //Do I need app.run here?
+            await productApiContext.MigrateDb();
+            //Seed the database with data. You may want to seed data directly with SQL commands instead (e.g. with a PowerShell script).
+            productApiContext.EnsureSeedDataForContext();
+            //Do I need app.run here?
         }
     }
 }

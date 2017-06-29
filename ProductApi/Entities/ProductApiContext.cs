@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProductApi.Entities
@@ -12,7 +13,12 @@ namespace ProductApi.Entities
             //Database.EnsureCreated();
 
             //This should really be used, but don't have the time to fix it given the current deadline.
-            Database.Migrate();
+            //Database.Migrate();
+        }
+
+        public async Task MigrateDb()
+        {
+            await Database.MigrateAsync();
         }
 
         //Used to query and save Entities to the DB

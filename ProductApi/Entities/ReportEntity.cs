@@ -13,8 +13,11 @@ namespace ProductApi.Entities
         public ReportEntity()
         {
             ReportGeneratedDate = DateTimeOffset.Now;
+            //MostPopularProducts = new List<ProductEntity>();
+            //MostPopularProductsInLastMonth = new List<ProductEntity>();
+            //MostPopularProductsInLastDays = new List<ProductEntity>();
         }
-        
+
         public int Id { get; set; }
         public string GeneratedByUser { get; set; }
 
@@ -50,14 +53,12 @@ namespace ProductApi.Entities
 
         //Navigation properties to access the product(s)
         public ProductEntity MostPopularProduct { get; set; }
-        public List<ProductEntity> MostPopularProducts { get; set; }
-
-        //Navigation properties to access the product(s)
         public ProductEntity MostPopularProductInLastMonth { get; set; }
-        public List<ProductEntity> MostPopularProductsInLastMonth { get; set; }
-
-        //Navigation properties to access the product(s)
         public ProductEntity MostPopularProductInLastDays { get; set; }
-        public List<ProductEntity> MostPopularProductsInLastDays { get; set; }
+
+        //For some reason, creating a list of products here adds random columns to the ProductEntity in SQL, so I'm not using these for now
+        //public List<ProductEntity> MostPopularProducts { get; set; }
+        //public List<ProductEntity> MostPopularProductsInLastMonth { get; set; }
+        //public List<ProductEntity> MostPopularProductsInLastDays { get; set; }
     }
 }
