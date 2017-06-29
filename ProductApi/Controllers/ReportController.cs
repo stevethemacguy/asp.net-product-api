@@ -66,27 +66,98 @@ namespace ProductApi.Controllers
         [HttpGet("orderCount")]
         public IActionResult OrderCount()
         {
-            var orders = _productRepo.GetAllOrders();
+            var orderCount = GetOrderCount();
 
             //Console.WriteLine(orders.Where(u));
-            return Ok(orders.Count());
+            return Ok(orderCount);
         }
 
+        //Helper Function for OrderCount() action and creating reports
+        private int GetOrderCount()
+        {
+            return _productRepo.GetAllOrders().Count();
+        }
+
+        //Helper Function for OrderCountByDays() action and creating reports
+        private int GetOrderCountByDays(int numberOfDays)
+        {
+            var orders = _productRepo.GetAllOrders();
+
+            int orderResult = 0;
+
+            foreach (var order in orders)
+            {
+                var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
+                var isBeforeDate = order.DateCreated >= beforeDate;
+                if (isBeforeDate)
+                {
+                    orderResult++;
+                }
+            }
+
+            //DateTime.Now.AddMonths(-12)
+            //Console.WriteLine(orders.Where(u));
+            return orderResult;
+        }
+
+        //Helper Function for OrderCountByMonths() action and creating reports
+        private int GetOrderCountByMonths(int numberOfMonths)
+        {
+            var orders = _productRepo.GetAllOrders();
+
+            int orderResult = 0;
+
+            foreach (var order in orders)
+            {
+                var beforeDate = DateTime.Now.AddMonths(-1 * numberOfMonths);
+                var isBeforeDate = order.DateCreated >= beforeDate;
+                if (isBeforeDate)
+                {
+                    orderResult++;
+                }
+            }
+
+            return orderResult;
+        }
+
+        //Returns the number of orders created in the last numberOfDays
+        [HttpGet("orderCountByDays/{numberOfDays}")]
+        public IActionResult OrderCountByDays(int numberOfDays)
+        {
+            int orderCount = GetOrderCountByDays(numberOfDays);
+            return Ok(orderCount);
+        }
+
+        //Returns the number of orders created in the last numberOfMonths
+        [HttpGet("orderCountByMonths/{numberOfMonths}")]
+        public IActionResult OrderCountByMonths(int numberOfMonths)
+        {
+            int orderCount = GetOrderCountByMonths(numberOfMonths);
+            return Ok(orderCount);
+        }
+
+        //Helper Function to get the number or orders pending, completed, etc.
+        private int GetOrdersByStatus(OrderStatus orderStatus)
+        {
+            var orders = _productRepo.GetAllOrders();
+
+            int orderCount = 0;
+
+            foreach (var order in orders)
+            {
+                if (order.OrderStatus == orderStatus)
+                {
+                    orderCount++;
+                }
+            }
+
+            return orderCount;
+        }
         //Returns the total number or orders in the "pending" status.
         [HttpGet("ordersPending")]
         public IActionResult OrdersPending()
         {
-            var orders = _productRepo.GetAllOrders();
-
-            int pendingOrderCount = 0;
-
-            foreach (var order in orders)
-            {
-                if (order.OrderStatus == OrderStatus.Pending)
-                {
-                    pendingOrderCount++;
-                }
-            }
+            int pendingOrderCount = GetOrdersByStatus(OrderStatus.Pending);
             return Ok(pendingOrderCount);
         }
 
@@ -94,17 +165,8 @@ namespace ProductApi.Controllers
         [HttpGet("ordersCompleted")]
         public IActionResult OrdersCompleted()
         {
-            var orders = _productRepo.GetAllOrders();
 
-            int completedOrderCount = 0;
-
-            foreach (var order in orders) 
-            {
-                if (order.OrderStatus == OrderStatus.Complete)
-                {
-                    completedOrderCount++;
-                }
-            }
+            int completedOrderCount = GetOrdersByStatus(OrderStatus.Complete);
             return Ok(completedOrderCount);
         }
 
@@ -112,31 +174,28 @@ namespace ProductApi.Controllers
         [HttpGet("ordersCancelled")]
         public IActionResult OrdersCancelled()
         {
-            var orders = _productRepo.GetAllOrders();
-
-            int cancelledOrderCount = 0;
-
-            foreach (var order in orders) 
-            {
-                if (order.OrderStatus == OrderStatus.Cancelled)
-                {
-                    cancelledOrderCount++;
-                }
-            }
+            int cancelledOrderCount = GetOrdersByStatus(OrderStatus.Cancelled);
             return Ok(cancelledOrderCount);
         }
 
-        //Returns the product that appears on the most orders since the beginning of time.
-        [HttpGet("mostPopularProduct")]
-        public IActionResult MostPopularProduct()
+        //Returns the total number or orders in the "cancelled" status.
+        [HttpGet("ordersProcessing")]
+        public IActionResult OrdersProcessing()
+        {
+            int processingOrderCount = GetOrdersByStatus(OrderStatus.Processing);
+            return Ok(processingOrderCount);
+        }
+
+        //Helper Function for MostPopularProduct(), mostPopularProductInLastMonth(), and
+        //MostPopularProductInLastDays() actions and creating reports.
+        private Product GetMostPopularProduct(IEnumerable<IGrouping<int, OrderItemEntity>> orderItemGroups)
         {
             //Used to keep track of the product that has been ordered the most
             var largestQuantity = 0;
             ProductEntity mostPopularProduct = null;
 
-            //Grouping the order items by ID puts all items with the same id into the same "group"
-            var itemGroups = _productRepo.GetOrderItems()
-                .GroupBy(i => i.ProductId);
+            //Get the item groupings passed in. The groups are a result of running a query on order items and grouping by Id
+            var itemGroups = orderItemGroups;
 
             //Todo: Is it possible to use OrderByDescending on the number of items in each itemGroup?
             //Instead of looping through the groups like below, if there's a way to bring the group that has the most 
@@ -170,8 +229,8 @@ namespace ProductApi.Controllers
                     //At this point, we know this CartItem was ordered more times than any other item, so update the Product
                     //All the CartItems in the group are the same, so we can just get the first product.
 
-                    mostPopularProduct = group.FirstOrDefault().Product; 
-                    
+                    mostPopularProduct = group.FirstOrDefault().Product;
+
                     //An additional for loop would allow you to access individual OrderItmes in the group
                     //foreach (var item in group)
                     //{
@@ -183,6 +242,18 @@ namespace ProductApi.Controllers
 
             //Convert the entity into a DTO that the front-end will understand.
             Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
+            return productToReturn;
+        }
+
+        //Returns the product that appears on the most orders since the beginning of time.
+        [HttpGet("mostPopularProduct")]
+        public IActionResult MostPopularProduct()
+        {
+            //Grouping the order items by ID puts all items with the same id into the same "group"
+            var itemGroups = _productRepo.GetOrderItems()
+                .GroupBy(i => i.ProductId);
+
+            Product productToReturn = GetMostPopularProduct(itemGroups);
             return Ok(productToReturn);
         }
 
@@ -190,10 +261,6 @@ namespace ProductApi.Controllers
         [HttpGet("mostPopularProductInLastMonth")]
         public IActionResult MostPopularProductInLastMonth()
         {
-
-            //SEE the "MostPopularProduct" action for full documentation on what's going on here.
-            var largestQuantity = 0;
-            ProductEntity mostPopularProduct = null;
 
             //A date one month prior to today's date
             var beforeDate = DateTime.Now.AddMonths(-1);
@@ -203,19 +270,7 @@ namespace ProductApi.Controllers
                 .Where(o => o.Order.DateCreated >= beforeDate)
                 .GroupBy(i => i.ProductId);
 
-            //SEE the "MostPopularProduct" action for full documentation of what's going on here.
-            foreach (var group in itemGroups)
-            {
-                var quantity = group.Count();
-                if (quantity > largestQuantity)
-                {
-                    largestQuantity = quantity;
-                    mostPopularProduct = group.FirstOrDefault().Product;
-                }
-            }
-
-            //Convert the entity into a DTO that the front-end will understand.
-            Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
+            Product productToReturn = GetMostPopularProduct(itemGroups);
             return Ok(productToReturn);
         }
 
@@ -223,11 +278,6 @@ namespace ProductApi.Controllers
         [HttpGet("mostPopularProductInLastDays/{numberOfDays}")]
         public IActionResult MostPopularProductInLastDays(int numberOfDays)
         {
-
-            //SEE the "MostPopularProduct" action for full documentation on what's going on here.
-            var largestQuantity = 0;
-            ProductEntity mostPopularProduct = null;
-
             //Subtract the number of days specified from today's date (e.g. 5 will return all items purchased in the last 5 days)
             var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
 
@@ -236,76 +286,38 @@ namespace ProductApi.Controllers
                 .Where(o => o.Order.DateCreated >= beforeDate)
                 .GroupBy(i => i.ProductId);
 
-            //SEE the "MostPopularProduct" action for full documentation of what's going on here.
-            foreach (var group in itemGroups)
-            {
-                var quantity = group.Count();
-                if (quantity > largestQuantity)
-                {
-                    largestQuantity = quantity;
-                    mostPopularProduct = group.FirstOrDefault().Product;
-                }
-            }
-
-            //Convert the entity into a DTO that the front-end will understand.
-            Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
+            Product productToReturn = GetMostPopularProduct(itemGroups);
             return Ok(productToReturn);
         }
 
-        //Returns the number of orders created in the last numberOfDays
-        [HttpGet("orderCountByDays/{numberOfDays}")]
-        public IActionResult OrderCountByDays(int numberOfDays)
+        //Helper Function for TotalSales() action and creating reports
+        private Decimal GetTotalSales()
         {
             var orders = _productRepo.GetAllOrders();
-
-            int orderResult = 0;
-
-            foreach (var order in orders) 
-            {
-                var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
-                var isBeforeDate = order.DateCreated >= beforeDate;
-                if (isBeforeDate)
-                {
-                    orderResult++;
-                }
-            }
-
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
-            return Ok(orderResult);
-        }
-
-        //Returns the number of orders created in the last numberOfMonths
-        [HttpGet("orderCountByMonths/{numberOfMonths}")]
-        public IActionResult OrderCountByMonths(int numberOfMonths)
-        {
-            var orders = _productRepo.GetAllOrders();
-
-            int orderResult = 0;
-
-            foreach (var order in orders) 
-            {
-                var beforeDate = DateTime.Now.AddMonths(-1 * numberOfMonths);
-                var isBeforeDate = order.DateCreated >= beforeDate;
-                if (isBeforeDate)
-                {
-                    orderResult++;
-                }
-            }
-
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
-            return Ok(orderResult);
-        }
-
-        [HttpGet("totalSalesInLastYear")]
-        public IActionResult TotalSalesInLastYear()
-        {
-            var orders = _productRepo.GetAllOrders();
-
             Decimal totalSales = 0;
 
-            foreach (var order in orders) 
+            foreach (var order in orders)
+            {
+                totalSales += order.TotalCost;
+            }
+
+            return totalSales;
+        }
+
+        [HttpGet("totalSales")]
+        public IActionResult TotalSales()
+        {
+            Decimal totalSales = GetTotalSales();
+            return Ok(totalSales);
+        }
+
+        //Helper Function for TotalSalesInLastYear() action and creating reports
+        private Decimal GetTotalSalesInLastYear()
+        {
+            var orders = _productRepo.GetAllOrders();
+            Decimal totalSales = 0;
+
+            foreach (var order in orders)
             {
                 var beforeDate = DateTime.Now.AddYears(-1);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -315,19 +327,16 @@ namespace ProductApi.Controllers
                 }
             }
 
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
-            return Ok(totalSales);
+            return totalSales;
         }
 
-        [HttpGet("totalSalesInLastMonth")]
-        public IActionResult TotalSalesInLastMonth()
+        //Helper Function for TotalSalesInLastMonth() action and creating reports
+        private Decimal GetTotalSalesInLastMonth()
         {
             var orders = _productRepo.GetAllOrders();
-
             Decimal totalSales = 0;
 
-            foreach (var order in orders) 
+            foreach (var order in orders)
             {
                 var beforeDate = DateTime.Now.AddMonths(-1);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -336,20 +345,17 @@ namespace ProductApi.Controllers
                     totalSales += order.TotalCost;
                 }
             }
-            
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
-            return Ok(totalSales);
+
+            return totalSales;
         }
 
-        [HttpGet("totalSalesInLastWeek")]
-        public IActionResult TotalSalesInLastWeek()
+        //Helper Function for TotalSalesInLastWeek() action and creating reports
+        private Decimal GetTotalSalesInLastWeek()
         {
             var orders = _productRepo.GetAllOrders();
-
             Decimal totalSales = 0;
 
-            foreach (var order in orders) 
+            foreach (var order in orders)
             {
                 var beforeDate = DateTime.Now.AddDays(-7);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -359,19 +365,16 @@ namespace ProductApi.Controllers
                 }
             }
 
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
-            return Ok(totalSales);
+            return totalSales;
         }
 
-        [HttpGet("TotalSalesInLastNumberOfDays/{numberOfDays}")]
-        public IActionResult TotalSalesInLastNumberOfDays(int numberOfDays)
+        //Helper Function for TotalSalesInLastNumberOfDays() action and creating reports
+        private Decimal GetTotalSalesInLastNumberOfDays(int numberOfDays)
         {
             var orders = _productRepo.GetAllOrders();
-
             Decimal totalSales = 0;
 
-            foreach (var order in orders) 
+            foreach (var order in orders)
             {
                 var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -381,8 +384,34 @@ namespace ProductApi.Controllers
                 }
             }
 
-            //DateTime.Now.AddMonths(-12)
-            //Console.WriteLine(orders.Where(u));
+            return totalSales;
+        }
+
+        [HttpGet("totalSalesInLastYear")]
+        public IActionResult TotalSalesInLastYear()
+        {
+            Decimal totalSales = GetTotalSalesInLastYear();
+            return Ok(totalSales);
+        }
+
+        [HttpGet("totalSalesInLastMonth")]
+        public IActionResult TotalSalesInLastMonth()
+        {
+            Decimal totalSales = GetTotalSalesInLastMonth();
+            return Ok(totalSales);
+        }
+
+        [HttpGet("totalSalesInLastWeek")]
+        public IActionResult TotalSalesInLastWeek()
+        {
+            Decimal totalSales = GetTotalSalesInLastWeek();
+            return Ok(totalSales);
+        }
+
+        [HttpGet("TotalSalesInLastNumberOfDays/{numberOfDays}")]
+        public IActionResult TotalSalesInLastNumberOfDays(int numberOfDays)
+        {
+            Decimal totalSales = GetTotalSalesInLastNumberOfDays(numberOfDays);
             return Ok(totalSales);
         }
 
