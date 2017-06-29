@@ -41,6 +41,60 @@ namespace ProductApi.Controllers
             return Ok(orders.Count());
         }
 
+        //Returns the total number or orders in the "pending" status.
+        [HttpGet("ordersPending")]
+        public IActionResult OrdersPending()
+        {
+            var orders = _productRepo.GetAllOrders();
+
+            int pendingOrderCount = 0;
+
+            foreach (var order in orders) // query executed and data obtained from database
+            {
+                if (order.OrderStatus == OrderStatus.Pending)
+                {
+                    pendingOrderCount++;
+                }
+            }
+            return Ok(pendingOrderCount);
+        }
+
+        //Returns the total number or orders in the "pending" status.
+        [HttpGet("ordersCompleted")]
+        public IActionResult OrdersCompleted()
+        {
+            var orders = _productRepo.GetAllOrders();
+
+            int completedOrderCount = 0;
+
+            foreach (var order in orders) // query executed and data obtained from database
+            {
+                if (order.OrderStatus == OrderStatus.Complete)
+                {
+                    completedOrderCount++;
+                }
+            }
+            return Ok(completedOrderCount);
+        }
+
+        //Returns the total number or orders in the "pending" status.
+        [HttpGet("ordersCancelled")]
+        public IActionResult OrdersCancelled()
+        {
+            var orders = _productRepo.GetAllOrders();
+
+            int cancelledOrderCount = 0;
+
+            foreach (var order in orders) // query executed and data obtained from database
+            {
+                if (order.OrderStatus == OrderStatus.Cancelled)
+                {
+                    cancelledOrderCount++;
+                }
+            }
+            return Ok(cancelledOrderCount);
+        }
+
         //Returns the number of orders created in the last numberOfDays
         [HttpGet("orderCountByDays/{numberOfDays}")]
         public IActionResult OrderCountByDays(int numberOfDays)
