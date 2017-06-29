@@ -31,6 +31,37 @@ namespace ProductApi.Controllers
             _productRepo = productRepo;
         }
 
+        [HttpGet("getOrderHistory")]
+        public async Task<IActionResult> GetOrderHistory()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var orders = _productRepo.GetUsersOrders(user.Id);
+
+            //List<OrderHistory> orderList = new List<OrderHistory>();
+            List<Order> orderList = new List<Order>();
+            //List<OrderItemEntity> orderItemList = new List<OrderItemEntity>();
+
+            foreach (var complexOrder in orders)
+            {
+                //OrderHistory orderToReturn = AutoMapper.Mapper.Map<OrderHistory>(complexOrder);
+                Order orderToReturn = AutoMapper.Mapper.Map<Order>(complexOrder);
+                orderList.Add(orderToReturn);
+            }
+            //Console.WriteLine(orders.Where(u));
+            return Ok(orderList);
+        }
+
         //Returns the total number orders created (regardless of when they were created)
         [HttpGet("orderCount")]
         public IActionResult OrderCount()
@@ -157,7 +188,7 @@ namespace ProductApi.Controllers
 
         //Returns the product that appears on the most orders in the last month
         [HttpGet("mostPopularProductInLastMonth")]
-        public IActionResult mostPopularProductInLastMonth()
+        public IActionResult MostPopularProductInLastMonth()
         {
 
             //SEE the "MostPopularProduct" action for full documentation on what's going on here.
@@ -360,12 +391,12 @@ namespace ProductApi.Controllers
         {
             var orders = _productRepo.GetAllOrders();
 
-            foreach (var order in orders) 
+            foreach (var order in orders)
             {
                 Console.WriteLine(order);
             }
 
-        
+
             //Console.WriteLine(orders.Where(u));
             return Ok(orders);
         }

@@ -190,6 +190,13 @@ namespace ProductApi
                 //Payment Method mappings
                 cfg.CreateMap<Entities.PaymentMethodEntity, Models.PaymentMethod>();
                 cfg.CreateMap<Models.PaymentMethod, Entities.PaymentMethodEntity>();
+
+                //Orders
+                cfg.CreateMap<Entities.OrderEntity, Models.Order>();
+                cfg.CreateMap<Models.Order, Entities.OrderEntity>();
+
+                cfg.CreateMap<Entities.OrderItemEntity, Models.OrderItem>();
+                cfg.CreateMap<Models.OrderItem, Entities.OrderItemEntity>();
             });
 
             //Enable CORS
