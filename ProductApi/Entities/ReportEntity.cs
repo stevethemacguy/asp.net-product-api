@@ -15,8 +15,8 @@ namespace ProductApi.Entities
             ReportGeneratedDate = DateTimeOffset.Now;
         }
         
-        //The Report's Id
         public int Id { get; set; }
+        public string GeneratedByUser { get; set; }
 
         //All numbers represent totals (i.e. Total Order Count)
         public int OrderCount { get; set; }

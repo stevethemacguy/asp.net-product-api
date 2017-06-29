@@ -62,13 +62,76 @@ namespace ProductApi.Controllers
             return Ok(orderList);
         }
 
+        [HttpGet("createReport")]
+        public async Task<IActionResult> CreateReport()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+
+            //Generate the Report
+            var order = new ReportEntity()
+            {
+                GeneratedByUser = user.Id,
+                OrderCount = GetOrderCount(),
+                OrderCountByYears = 0,                          //Future enhancement
+                OrderCountByMonths = GetOrderCountByMonths(1),  //Last Month by Default. Future functionality may allow the user to specify the number when generating the report.
+                OrderCountByWeeks = 0,                          //Future enhancement
+                OrderCountByDays = GetOrderCountByDays(7),      //Last Week by Default. Future functionality may allow the user to specify the number when generating the report.
+                OrdersPending = GetOrdersByStatus(OrderStatus.Pending),
+                OrdersProcessing = GetOrdersByStatus(OrderStatus.Processing),
+                OrdersComplete = GetOrdersByStatus(OrderStatus.Complete),
+                OrdersCancelled = GetOrdersByStatus(OrderStatus.Cancelled),
+                TotalSales = GetTotalSales(),
+                SalesInLastYear = GetTotalSalesInLastYear(),
+                SalesInLastMonth = GetTotalSalesInLastMonth(),
+                SalesInLastWeek = GetTotalSalesInLastWeek(),
+                SalesInLastNumberOfDays = 0,                //Future enhancement
+                OrderWithlargestItemCount = 0,              //Future enhancement
+                LargestOrderItemCount = 0,                  //Future enhancement
+                OrderWithLargestTotalPrice = 0,             //Future enhancement
+                LargestOrderTotalPrice = new decimal(0.0),  //Future enhancement
+                AverageOrderCost = new decimal(0.0),        //Future enhancement
+                AverageDiscountAmount = new decimal(0.0),   //Future enhancement
+                AverageNumberOfItemsPurchased = 0.0,        //Future enhancement
+                MostPopularProduct = GetMostPopularProduct(),
+                MostPopularProducts = new List<ProductEntity>(), //Future enhancement
+                MostPopularProductInLastMonth = GetMostPopularProductInLastMonth(),
+                MostPopularProductsInLastMonth = new List<ProductEntity>(), //Future enhancement
+                MostPopularProductInLastDays = GetMostPopularProductInLastDays(7), //Last Week by Default. Future functionality may allow the user to specify the number when generating the report.
+                MostPopularProductsInLastDays = new List<ProductEntity>() //Future enhancement
+            };
+
+
+            return Ok();
+        }
+
+        [HttpGet("getReportById/{Id}")]
+        public IActionResult GetReportById(int reportId)
+        {
+            return Ok();
+        }
+
+        [HttpGet("getAllReports")]
+        public IActionResult GetReports()
+        {
+            return Ok();
+        }
+
         //Returns the total number orders created (regardless of when they were created)
         [HttpGet("orderCount")]
         public IActionResult OrderCount()
         {
             var orderCount = GetOrderCount();
-
-            //Console.WriteLine(orders.Where(u));
             return Ok(orderCount);
         }
 
@@ -186,16 +249,16 @@ namespace ProductApi.Controllers
             return Ok(processingOrderCount);
         }
 
-        //Helper Function for MostPopularProduct(), mostPopularProductInLastMonth(), and
-        //MostPopularProductInLastDays() actions and creating reports.
-        private Product GetMostPopularProduct(IEnumerable<IGrouping<int, OrderItemEntity>> orderItemGroups)
+        //Helper Function for MostPopularProduct() actions and creating reports.
+        private ProductEntity GetMostPopularProduct()
         {
             //Used to keep track of the product that has been ordered the most
             var largestQuantity = 0;
             ProductEntity mostPopularProduct = null;
 
-            //Get the item groupings passed in. The groups are a result of running a query on order items and grouping by Id
-            var itemGroups = orderItemGroups;
+            //Grouping the order items by ID puts all items with the same id into the same "group"
+            var itemGroups = _productRepo.GetOrderItems()
+                .GroupBy(i => i.ProductId);
 
             //Todo: Is it possible to use OrderByDescending on the number of items in each itemGroup?
             //Instead of looping through the groups like below, if there's a way to bring the group that has the most 
@@ -239,21 +302,77 @@ namespace ProductApi.Controllers
                     //}
                 }
             }
+            return mostPopularProduct;
+        }
 
-            //Convert the entity into a DTO that the front-end will understand.
-            Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
-            return productToReturn;
+        //Helper Function for mostPopularProductInLastMonth() action and creating reports
+        //SEE GetMostPopularProduct() FOR DOCUMENTATION!
+        private ProductEntity GetMostPopularProductInLastMonth()
+        {
+            //Used to keep track of the product that has been ordered the most
+            var largestQuantity = 0;
+            ProductEntity mostPopularProduct = null;
+
+            //A date one month prior to today's date
+            var beforeDate = DateTime.Now.AddMonths(-1);
+
+            //Get all orderItems, but only if they were part of an order that was purchased in the last month
+            //Grouping the order items by ID puts all items with the same id into the same "group"
+            var itemGroups = _productRepo.GetOrderItemsAndParentOrder()
+                .Where(o => o.Order.DateCreated >= beforeDate)
+                .GroupBy(i => i.ProductId);
+
+            foreach (var group in itemGroups)
+            {
+                var quantity = group.Count();
+                if (quantity > largestQuantity)
+                {
+                    largestQuantity = quantity;
+                    mostPopularProduct = group.FirstOrDefault().Product;
+                }
+            }
+
+            return mostPopularProduct;
+        }
+
+        //Helper Function for mostPopularProductInLastMonth() action and creating reports
+        //SEE GetMostPopularProduct() FOR DOCUMENTATION!
+        private ProductEntity GetMostPopularProductInLastDays(int numberOfDays)
+        {
+            //Used to keep track of the product that has been ordered the most
+            var largestQuantity = 0;
+            ProductEntity mostPopularProduct = null;
+
+            //Subtract the number of days specified from today's date (e.g. 5 will return all items purchased in the last 5 days)
+            var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
+
+            //Get all orderItems, but only if they were part of an order that was purchased in the x numberOfDays.
+            //Grouping the order items by ID puts all items with the same id into the same "group"
+            var itemGroups = _productRepo.GetOrderItemsAndParentOrder()
+                .Where(o => o.Order.DateCreated >= beforeDate)
+                .GroupBy(i => i.ProductId);
+
+            foreach (var group in itemGroups)
+            {
+                var quantity = group.Count();
+                if (quantity > largestQuantity)
+                {
+                    largestQuantity = quantity;
+                    mostPopularProduct = group.FirstOrDefault().Product;
+                }
+            }
+            
+            return mostPopularProduct;
         }
 
         //Returns the product that appears on the most orders since the beginning of time.
         [HttpGet("mostPopularProduct")]
         public IActionResult MostPopularProduct()
         {
-            //Grouping the order items by ID puts all items with the same id into the same "group"
-            var itemGroups = _productRepo.GetOrderItems()
-                .GroupBy(i => i.ProductId);
+            //Get the most popular product entity and convert it into a DTO that the front-end will understand.
+            ProductEntity productEntity = GetMostPopularProduct();
+            Product productToReturn = AutoMapper.Mapper.Map<Product>(productEntity);
 
-            Product productToReturn = GetMostPopularProduct(itemGroups);
             return Ok(productToReturn);
         }
 
@@ -261,16 +380,10 @@ namespace ProductApi.Controllers
         [HttpGet("mostPopularProductInLastMonth")]
         public IActionResult MostPopularProductInLastMonth()
         {
+            //Get the most popular product entity and convert it into a DTO that the front-end will understand.
+            ProductEntity productEntity = GetMostPopularProductInLastMonth();
+            Product productToReturn = AutoMapper.Mapper.Map<Product>(productEntity);
 
-            //A date one month prior to today's date
-            var beforeDate = DateTime.Now.AddMonths(-1);
-
-            //Get all orderItems, but only if they were part of an order that was purchased in the last month
-            var itemGroups = _productRepo.GetOrderItemsAndParentOrder()
-                .Where(o => o.Order.DateCreated >= beforeDate)
-                .GroupBy(i => i.ProductId);
-
-            Product productToReturn = GetMostPopularProduct(itemGroups);
             return Ok(productToReturn);
         }
 
@@ -278,15 +391,10 @@ namespace ProductApi.Controllers
         [HttpGet("mostPopularProductInLastDays/{numberOfDays}")]
         public IActionResult MostPopularProductInLastDays(int numberOfDays)
         {
-            //Subtract the number of days specified from today's date (e.g. 5 will return all items purchased in the last 5 days)
-            var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
+            //Get the most popular product entity and convert it into a DTO that the front-end will understand.
+            ProductEntity productEntity = GetMostPopularProductInLastDays(numberOfDays);
+            Product productToReturn = AutoMapper.Mapper.Map<Product>(productEntity);
 
-            //Get all orderItems, but only if they were part of an order that was purchased in the x numberOfDays.
-            var itemGroups = _productRepo.GetOrderItemsAndParentOrder()
-                .Where(o => o.Order.DateCreated >= beforeDate)
-                .GroupBy(i => i.ProductId);
-
-            Product productToReturn = GetMostPopularProduct(itemGroups);
             return Ok(productToReturn);
         }
 
@@ -413,21 +521,6 @@ namespace ProductApi.Controllers
         {
             Decimal totalSales = GetTotalSalesInLastNumberOfDays(numberOfDays);
             return Ok(totalSales);
-        }
-
-        [HttpGet("createReport")]
-        public IActionResult CreateReport()
-        {
-            var orders = _productRepo.GetAllOrders();
-
-            foreach (var order in orders)
-            {
-                Console.WriteLine(order);
-            }
-
-
-            //Console.WriteLine(orders.Where(u));
-            return Ok(orders);
         }
     }
 }
