@@ -48,12 +48,15 @@ namespace ProductApi.Entities
         public Decimal AverageDiscountAmount { get; set; }
         public Double AverageNumberOfItemsPurchased { get; set; }
 
+        //Navigation properties to access the product(s)
         public ProductEntity MostPopularProduct { get; set; }
         public List<ProductEntity> MostPopularProducts { get; set; }
 
+        //Navigation properties to access the product(s)
         public ProductEntity MostPopularProductInLastMonth { get; set; }
         public List<ProductEntity> MostPopularProductsInLastMonth { get; set; }
 
+        //Navigation properties to access the product(s)
         public ProductEntity MostPopularProductInLastDays { get; set; }
         public List<ProductEntity> MostPopularProductsInLastDays { get; set; }
     }

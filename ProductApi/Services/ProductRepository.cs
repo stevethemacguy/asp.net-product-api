@@ -413,12 +413,25 @@ namespace ProductApi.Services
         public ReportEntity GetReport(int reportId)
         {
             return _context.Reports
+                .Include(r => r.MostPopularProduct)
+                .Include(r => r.MostPopularProductInLastDays)
+                .Include(r => r.MostPopularProductInLastMonth)
+                .Include(r => r.MostPopularProducts)
+                .Include(r => r.MostPopularProductsInLastDays)
+                .Include(r => r.MostPopularProductsInLastMonth)
                 .FirstOrDefault(r => r.Id == reportId);
         }
 
         public IEnumerable<ReportEntity> GetReports()
         {
-            return _context.Reports.OrderBy(r => r.ReportGeneratedDate).ToList();
+            return _context.Reports
+                .Include(r => r.MostPopularProduct)
+                .Include(r => r.MostPopularProductInLastDays)
+                .Include(r => r.MostPopularProductInLastMonth)
+                .Include(r => r.MostPopularProducts)
+                .Include(r => r.MostPopularProductsInLastDays)
+                .Include(r => r.MostPopularProductsInLastMonth)
+                .OrderBy(r => r.ReportGeneratedDate).ToList();
         }
     }
 }
