@@ -91,6 +91,10 @@ namespace ProductApi.Services
         IEnumerable<OrderItemEntity> GetOrderItems();
         IEnumerable<OrderItemEntity> GetOrderItemsAndParentOrder();
 
+        void CreateReport(ReportEntity reportToAdd);
+        ReportEntity GetReport(int reportId);
+        IEnumerable<ReportEntity> GetReports();
+
         //Required to save new entities to the database context when they are created.
         bool Save();
         

@@ -27,10 +27,11 @@ namespace ProductApi.Entities
         
         public DbSet<PaymentMethodEntity> PaymentMethods { get; set; }
         public DbSet<ShippingMethodTypeEntity> ShippingTypes { get; set; }
-        
 
-        //Note: ShoppingCarts are no longer used. CartItems use their shoppingCartId to track which cart should be used.
+        public DbSet<ReportEntity> Reports { get; set; }
+
         //Todo: Remove and update the DB Scheme with a new migration.
+        //Note: ShoppingCarts are no longer used. CartItems use their shoppingCartId to track which cart should be used.
         public DbSet<ShoppingCartEntity> ShoppingCarts { get; set; }
     }
 }

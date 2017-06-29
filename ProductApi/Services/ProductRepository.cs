@@ -137,6 +137,16 @@ namespace ProductApi.Services
             return true;
         }
 
+        public bool ReportExists(int reportId)
+        {
+            var existingItem = _context.Reports.FirstOrDefault(i => i.Id == reportId);
+            if (existingItem == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public bool OrderExists(int orderId)
         {
             var existingItem = _context.Orders.FirstOrDefault(i => i.Id == orderId);
@@ -384,6 +394,31 @@ namespace ProductApi.Services
                 .Include(o => o.Order);
 
             return allItems;
+        }
+
+        ///////  REPORTS  \\\\\\\\
+
+        public void CreateReport(ReportEntity reportToAdd)
+        {
+            //check if the entity already exists in the DB.
+            var entityExists = ReportExists(reportToAdd.Id);
+
+            //If it doesn't exists, then add a new one to the DB
+            if (entityExists == false)
+            {
+                _context.Reports.Add(reportToAdd);
+            }
+        }
+
+        public ReportEntity GetReport(int reportId)
+        {
+            return _context.Reports
+                .FirstOrDefault(r => r.Id == reportId);
+        }
+
+        public IEnumerable<ReportEntity> GetReports()
+        {
+            return _context.Reports.OrderBy(r => r.ReportGeneratedDate).ToList();
         }
     }
 }

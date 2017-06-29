@@ -197,6 +197,10 @@ namespace ProductApi
 
                 cfg.CreateMap<Entities.OrderItemEntity, Models.OrderItem>();
                 cfg.CreateMap<Models.OrderItem, Entities.OrderItemEntity>();
+
+                //Reports
+                cfg.CreateMap<Entities.ReportEntity, Models.Report>();
+                cfg.CreateMap<Models.Report, Entities.ReportEntity>();
             });
 
             //Enable CORS
