@@ -354,5 +354,48 @@ namespace ProductApi.Services
 
             return allOrders;
         }
+
+        public IEnumerable<OrderItemEntity> GetAllOrderItems()
+        {
+            var items = _context.OrderItems;
+            if (!items.Any())
+            {
+                return null;
+            }
+
+            //var orderItems = _context.OrderItems.GroupBy(p => p.ProductId);
+
+            //int mostPopularId = 0;
+            //int biggestCount = 0;
+
+            //foreach (var item in orderItems)
+            //{
+            //    var itemCount = 0;
+            //    //group.Key is the CategoryId value
+            //    foreach (var theItem in item)
+            //    {
+            //        theItem.Quantity
+            //        // you can access individual product properties
+            //    }
+            //}
+
+            //_context.OrderItems.OrderByDescending(i => i.ProductId).Sum(i => i.Quantity);
+
+            //var allItems = _context.OrderItems.OrderByDescending(i => i.ProductId);
+
+            var allItems = _context.OrderItems.Include(p => p.Product);
+
+            return allItems;
+            //var allItems = _context.OrderItems.GroupBy(i => i.ProductId);
+            //var popular = allItems.OrderByDescending(i=> i.)
+
+            //var allItems = _context.OrderItems
+            //    .GroupBy(i=> i.ProductId)
+            //    .OrderByDescending(i)
+            //    //.Sum(i)
+            //
+
+            //return allOrders;
+        }
     }
 }

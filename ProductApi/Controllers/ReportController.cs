@@ -33,7 +33,7 @@ namespace ProductApi.Controllers
 
         //Returns the total number orders created (regardless of when they were created)
         [HttpGet("orderCount")]
-        public IActionResult orderCount()
+        public IActionResult OrderCount()
         {
             var orders = _productRepo.GetAllOrders();
 
@@ -49,7 +49,7 @@ namespace ProductApi.Controllers
 
             int pendingOrderCount = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders)
             {
                 if (order.OrderStatus == OrderStatus.Pending)
                 {
@@ -59,7 +59,7 @@ namespace ProductApi.Controllers
             return Ok(pendingOrderCount);
         }
 
-        //Returns the total number or orders in the "pending" status.
+        //Returns the total number or orders in the "complete" status.
         [HttpGet("ordersCompleted")]
         public IActionResult OrdersCompleted()
         {
@@ -67,7 +67,7 @@ namespace ProductApi.Controllers
 
             int completedOrderCount = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 if (order.OrderStatus == OrderStatus.Complete)
                 {
@@ -77,7 +77,7 @@ namespace ProductApi.Controllers
             return Ok(completedOrderCount);
         }
 
-        //Returns the total number or orders in the "pending" status.
+        //Returns the total number or orders in the "cancelled" status.
         [HttpGet("ordersCancelled")]
         public IActionResult OrdersCancelled()
         {
@@ -85,7 +85,7 @@ namespace ProductApi.Controllers
 
             int cancelledOrderCount = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 if (order.OrderStatus == OrderStatus.Cancelled)
                 {
@@ -93,6 +93,58 @@ namespace ProductApi.Controllers
                 }
             }
             return Ok(cancelledOrderCount);
+        }
+
+        //Returns the product that has been purchased the most.
+        [HttpGet("mostPopularProduct")]
+        public IActionResult MostPopularProduct()
+        {
+            //Should quantity be involved?
+            //var orderItems = _productRepo.GetAllOrderItems().OrderByDescending(i=>i.ProductId).GroupBy(i=>i.ProductId);
+
+            var largestQuantity = 0;
+            ProductEntity mostPopularProduct = null;
+
+            var groups = _productRepo.GetAllOrderItems()
+                .GroupBy(i => i.ProductId);
+            foreach (var group in groups)
+            {
+                var quantity = group.Count();
+
+                if (quantity > largestQuantity)
+                {
+                    largestQuantity = quantity;
+
+                    //group.Key is the CategoryId value
+                    foreach (var item in group)
+                    {
+                        mostPopularProduct = item.Product;
+                        // you can access individual product properties
+                    }
+                }
+            }
+
+            //var allItems = _context.OrderItems.OrderByDescending(i => i.Quantity);
+
+            //Get all orderItems from all orders
+            //GroupBy by Product ID
+            //Get the sum of the quantity
+            //Now re-order by the sum
+            //Return the first product
+
+
+            //ProductEntity mostPopularProduct = null;
+            //foreach (var order in orders)
+            //{
+
+            //    if (order.OrderStatus == OrderStatus.Cancelled)
+            //    {
+            //        cancelledOrderCount++;
+            //    }
+            //}
+
+            Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
+            return Ok(productToReturn);
         }
 
         //Returns the number of orders created in the last numberOfDays
@@ -103,7 +155,7 @@ namespace ProductApi.Controllers
 
             int orderResult = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -126,7 +178,7 @@ namespace ProductApi.Controllers
 
             int orderResult = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 var beforeDate = DateTime.Now.AddMonths(-1 * numberOfMonths);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -148,7 +200,7 @@ namespace ProductApi.Controllers
 
             Decimal totalSales = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 var beforeDate = DateTime.Now.AddYears(-1);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -170,7 +222,7 @@ namespace ProductApi.Controllers
 
             Decimal totalSales = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 var beforeDate = DateTime.Now.AddMonths(-1);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -192,7 +244,7 @@ namespace ProductApi.Controllers
 
             Decimal totalSales = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 var beforeDate = DateTime.Now.AddDays(-7);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -214,7 +266,7 @@ namespace ProductApi.Controllers
 
             Decimal totalSales = 0;
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
                 var isBeforeDate = order.DateCreated >= beforeDate;
@@ -234,7 +286,7 @@ namespace ProductApi.Controllers
         {
             var orders = _productRepo.GetAllOrders();
 
-            foreach (var order in orders) // query executed and data obtained from database
+            foreach (var order in orders) 
             {
                 Console.WriteLine(order);
             }
