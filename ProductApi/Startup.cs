@@ -42,10 +42,10 @@ namespace ProductApi
             //var connectionString = Startup.Configuration["connectionStrings:productApiDBConnectionString"];
 
             //Used this to connect to the SQL DB on Azure (the one being used with VS TS)
-            var connectionString = Startup.Configuration["connectionStrings:DefaultConnection"];
+            //var connectionString = Startup.Configuration["connectionStrings:DefaultConnection"];
 
             //Use this to connect to the Github SQL DB (the one being used with my GitHub service)
-            //var connectionString = Startup.Configuration["connectionStrings:GitHubConnection"]; 
+            var connectionString = Startup.Configuration["connectionStrings:GitHubConnection"]; 
             
             //Add the DB context so we can inject it into our classes
             services.AddDbContext<ProductApiContext>(o => o.UseSqlServer(connectionString));
