@@ -77,9 +77,8 @@ namespace ProductApi.Controllers
                 return NotFound();
             }
 
-
             //Generate the Report
-            var order = new ReportEntity()
+            var report = new ReportEntity()
             {
                 GeneratedByUser = user.Id,
                 OrderCount = GetOrderCount(),
@@ -111,6 +110,15 @@ namespace ProductApi.Controllers
                 MostPopularProductsInLastDays = new List<ProductEntity>() //Future enhancement
             };
 
+            //Add the new report to the repo
+            _productRepo.CreateReport(report);
+
+            //Save all changes to the repo
+            if (!_productRepo.Save())
+            {
+                _logger.LogInformation("The attempt to add a new report to the database FAILED.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
 
             return Ok();
         }
@@ -118,13 +126,28 @@ namespace ProductApi.Controllers
         [HttpGet("getReportById/{Id}")]
         public IActionResult GetReportById(int reportId)
         {
-            return Ok();
+            var reportToReturn = _productRepo.GetReport(reportId);
+
+            if (reportToReturn == null)
+            {
+                return NotFound();
+            }
+
+            var reportResult = AutoMapper.Mapper.Map<Report>(reportToReturn);
+
+            return Ok(reportResult);
         }
 
         [HttpGet("getAllReports")]
         public IActionResult GetReports()
         {
-            return Ok();
+            //Get the reprots from the DB
+            var reportEntities = _productRepo.GetReports();
+
+            //Map the product entities to the DTO classes using automapper
+            var allReports = AutoMapper.Mapper.Map<IEnumerable<Report>>(reportEntities);
+
+            return Ok(allReports);
         }
 
         //Returns the total number orders created (regardless of when they were created)
