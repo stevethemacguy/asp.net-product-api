@@ -88,7 +88,8 @@ namespace ProductApi.Services
         ////// Reporting //////
         IEnumerable<OrderEntity> GetAllOrders();
         IEnumerable<OrderEntity> GetUsersOrders(string userId);
-        IEnumerable<OrderItemEntity> GetAllOrderItems();
+        IEnumerable<OrderItemEntity> GetOrderItems();
+        IEnumerable<OrderItemEntity> GetOrderItemsAndParentOrder();
 
         //Required to save new entities to the database context when they are created.
         bool Save();

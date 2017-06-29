@@ -95,54 +95,128 @@ namespace ProductApi.Controllers
             return Ok(cancelledOrderCount);
         }
 
-        //Returns the product that has been purchased the most.
+        //Returns the product that appears on the most orders since the beginning of time.
         [HttpGet("mostPopularProduct")]
         public IActionResult MostPopularProduct()
         {
-            //Should quantity be involved?
-            //var orderItems = _productRepo.GetAllOrderItems().OrderByDescending(i=>i.ProductId).GroupBy(i=>i.ProductId);
-
+            //Used to keep track of the product that has been ordered the most
             var largestQuantity = 0;
             ProductEntity mostPopularProduct = null;
 
-            var groups = _productRepo.GetAllOrderItems()
+            //Grouping the order items by ID puts all items with the same id into the same "group"
+            var itemGroups = _productRepo.GetOrderItems()
                 .GroupBy(i => i.ProductId);
-            foreach (var group in groups)
+
+            //Todo: Is it possible to use OrderByDescending on the number of items in each itemGroup?
+            //Instead of looping through the groups like below, if there's a way to bring the group that has the most 
+            //OrderItems to the top of the list, then we could just pull the first OrderItem from that group (since each OrderItem in the group is the same)
+            //In other words, 
+
+            //Each group is a list of OrderItems in one of the itemGroups (i.e. itemGroups is a List of groups, but each group is a list of OrderItems with the same ID)
+            //For example:
+            //      If the "Book" was ordered 3 times (i.e. there are 3 "Book" orderItems)
+            //      And the "Dvd" was ordered 2 times (i.e. there are 2 "Dvd" orderItems),
+            //      then itemGroups would be an array with two groups, each group having the same product since we grouped by Id
+            //      [
+            //         [Book, Book, Book],
+            //         [Dvd, Dvd]    
+            //      ]
+            //
+            //      The groups are fairly meaningless since we only grouped by Id, but these could be grouped by any attribute.
+            foreach (var group in itemGroups)
             {
+                //group.Key is the CategoryId value (i.e. ProductId)
+
+                //At this point we're looking at a single group: [Book, Book, Book]
+                //For example, if a "Book" was ordered 3 times, the there will be three Book OrderItems in group.
+                //Since the group is a list of duplicate CartItem, counting them gives us the total number of this CartItem
                 var quantity = group.Count();
 
+                //Update largestQuantity if this OrderItem was purchased more times than the previously saved largestQuantity
                 if (quantity > largestQuantity)
                 {
                     largestQuantity = quantity;
+                    //At this point, we know this CartItem was ordered more times than any other item, so update the Product
+                    //All the CartItems in the group are the same, so we can just get the first product.
 
-                    //group.Key is the CategoryId value
-                    foreach (var item in group)
-                    {
-                        mostPopularProduct = item.Product;
-                        // you can access individual product properties
-                    }
+                    mostPopularProduct = group.FirstOrDefault().Product; 
+                    
+                    //An additional for loop would allow you to access individual OrderItmes in the group
+                    //foreach (var item in group)
+                    //{
+                    //    mostPopularProduct = item.Product;
+                    //    // you can access individual product properties
+                    //}
                 }
             }
 
-            //var allItems = _context.OrderItems.OrderByDescending(i => i.Quantity);
+            //Convert the entity into a DTO that the front-end will understand.
+            Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
+            return Ok(productToReturn);
+        }
 
-            //Get all orderItems from all orders
-            //GroupBy by Product ID
-            //Get the sum of the quantity
-            //Now re-order by the sum
-            //Return the first product
+        //Returns the product that appears on the most orders in the last month
+        [HttpGet("mostPopularProductInLastMonth")]
+        public IActionResult mostPopularProductInLastMonth()
+        {
 
+            //SEE the "MostPopularProduct" action for full documentation on what's going on here.
+            var largestQuantity = 0;
+            ProductEntity mostPopularProduct = null;
 
-            //ProductEntity mostPopularProduct = null;
-            //foreach (var order in orders)
-            //{
+            //A date one month prior to today's date
+            var beforeDate = DateTime.Now.AddMonths(-1);
 
-            //    if (order.OrderStatus == OrderStatus.Cancelled)
-            //    {
-            //        cancelledOrderCount++;
-            //    }
-            //}
+            //Get all orderItems, but only if they were part of an order that was purchased in the last month
+            var itemGroups = _productRepo.GetOrderItemsAndParentOrder()
+                .Where(o => o.Order.DateCreated >= beforeDate)
+                .GroupBy(i => i.ProductId);
 
+            //SEE the "MostPopularProduct" action for full documentation of what's going on here.
+            foreach (var group in itemGroups)
+            {
+                var quantity = group.Count();
+                if (quantity > largestQuantity)
+                {
+                    largestQuantity = quantity;
+                    mostPopularProduct = group.FirstOrDefault().Product;
+                }
+            }
+
+            //Convert the entity into a DTO that the front-end will understand.
+            Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
+            return Ok(productToReturn);
+        }
+
+        //Returns the product that appears on the most orders since the last numberOfDays (e.g. the most popular product in the last 5 days
+        [HttpGet("mostPopularProductInLastDays/{numberOfDays}")]
+        public IActionResult MostPopularProductInLastDays(int numberOfDays)
+        {
+
+            //SEE the "MostPopularProduct" action for full documentation on what's going on here.
+            var largestQuantity = 0;
+            ProductEntity mostPopularProduct = null;
+
+            //Subtract the number of days specified from today's date (e.g. 5 will return all items purchased in the last 5 days)
+            var beforeDate = DateTime.Now.AddDays(-1 * numberOfDays);
+
+            //Get all orderItems, but only if they were part of an order that was purchased in the x numberOfDays.
+            var itemGroups = _productRepo.GetOrderItemsAndParentOrder()
+                .Where(o => o.Order.DateCreated >= beforeDate)
+                .GroupBy(i => i.ProductId);
+
+            //SEE the "MostPopularProduct" action for full documentation of what's going on here.
+            foreach (var group in itemGroups)
+            {
+                var quantity = group.Count();
+                if (quantity > largestQuantity)
+                {
+                    largestQuantity = quantity;
+                    mostPopularProduct = group.FirstOrDefault().Product;
+                }
+            }
+
+            //Convert the entity into a DTO that the front-end will understand.
             Product productToReturn = AutoMapper.Mapper.Map<Product>(mostPopularProduct);
             return Ok(productToReturn);
         }

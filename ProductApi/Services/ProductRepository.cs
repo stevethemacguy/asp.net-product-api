@@ -355,7 +355,8 @@ namespace ProductApi.Services
             return allOrders;
         }
 
-        public IEnumerable<OrderItemEntity> GetAllOrderItems()
+        //Each OrderItem returned also includes the product that's associated with the OrderItem
+        public IEnumerable<OrderItemEntity> GetOrderItems()
         {
             var items = _context.OrderItems;
             if (!items.Any())
@@ -363,39 +364,26 @@ namespace ProductApi.Services
                 return null;
             }
 
-            //var orderItems = _context.OrderItems.GroupBy(p => p.ProductId);
-
-            //int mostPopularId = 0;
-            //int biggestCount = 0;
-
-            //foreach (var item in orderItems)
-            //{
-            //    var itemCount = 0;
-            //    //group.Key is the CategoryId value
-            //    foreach (var theItem in item)
-            //    {
-            //        theItem.Quantity
-            //        // you can access individual product properties
-            //    }
-            //}
-
-            //_context.OrderItems.OrderByDescending(i => i.ProductId).Sum(i => i.Quantity);
-
-            //var allItems = _context.OrderItems.OrderByDescending(i => i.ProductId);
-
             var allItems = _context.OrderItems.Include(p => p.Product);
 
             return allItems;
-            //var allItems = _context.OrderItems.GroupBy(i => i.ProductId);
-            //var popular = allItems.OrderByDescending(i=> i.)
+        }
 
-            //var allItems = _context.OrderItems
-            //    .GroupBy(i=> i.ProductId)
-            //    .OrderByDescending(i)
-            //    //.Sum(i)
-            //
+        //Each OrderItem returned also includes the product that's associated with the OrderItem
+        //AND it includes the Parent Order of the OrderItem
+        public IEnumerable<OrderItemEntity> GetOrderItemsAndParentOrder()
+        {
+            var items = _context.OrderItems;
+            if (!items.Any())
+            {
+                return null;
+            }
 
-            //return allOrders;
+            var allItems = _context.OrderItems
+                .Include(p => p.Product)
+                .Include(o => o.Order);
+
+            return allItems;
         }
     }
 }
