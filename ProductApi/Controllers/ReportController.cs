@@ -135,7 +135,7 @@ namespace ProductApi.Controllers
         }
 
         [HttpGet("getAllReports")]
-        public IActionResult GetReports()
+        public IActionResult GetAllReports()
         {
             //Get the reprots from the DB
             var reportEntities = _productRepo.GetReports();
